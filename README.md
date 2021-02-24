@@ -10,10 +10,14 @@ The solution for that is DarkModeBuddy. It's a tiny app that keeps running in th
 
 <img src="./Assets/screenshot3.png" width="497">
 
+# Compatibility
+
+**DarkModeBuddy requires macOS Catalina and a Mac with a built-in ambient light sensor**
+
+The app currently doesn't support older Macs (from before 2018) or external displays with ambient light sensors. Pull requests adding support to hardware that's not currently supported are more than welcome.
+
 # Download
 
 DarkModeBuddy is available for free (it's also open-source). If you prefer, you can pay any amount you'd like in order to support my work.
 
 [You can always get the latest build on Gumroad](https://darkmodebuddy.app).
-
-**DarkModeBuddy requires macOS Catalina and a Mac with a built-in ambient light sensor**
