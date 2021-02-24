@@ -25,7 +25,7 @@
 		F479415125E6BBF4001BB982 /* Sparkle.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F479415025E6BBF4001BB982 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F479416825E6C408001BB982 /* SharedFileList.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416625E6C408001BB982 /* SharedFileList.m */; };
 		F479416925E6C408001BB982 /* SharedFileList.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416725E6C408001BB982 /* SharedFileList.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F479416C25E6D24C001BB982 /* DMBAmbientLightSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */; };
+		F479416C25E6D24C001BB982 /* DMBAmbientLightSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */; };
 /* End PBXBuildFile section */
 
