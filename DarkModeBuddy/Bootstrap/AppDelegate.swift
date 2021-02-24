@@ -73,6 +73,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         return true
     }
+    
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        let alert = NSAlert()
+        alert.messageText = "Quit DarkModeBuddy?"
+        alert.informativeText = "If you quit DarkModeBuddy, it won't be able to monitor your ambient light level and change the system theme automatically. Would you like to hide DarkModeBuddy instead?"
+        alert.addButton(withTitle: "Hide DarkModeBuddy")
+        alert.addButton(withTitle: "Quit")
+
+        let result = alert.runModal()
+
+        if result == .alertSecondButtonReturn {
+            return .terminateNow
+        } else {
+            window?.close()
+            
+            return .terminateCancel
+        }
+    }
 
 }
 
