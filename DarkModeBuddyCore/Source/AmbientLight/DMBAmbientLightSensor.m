@@ -96,6 +96,8 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 - (BOOL)isPresent
 {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DMBFakeSensorSupported"]) return YES;
+    
     return self.event != NULL;
 }
 

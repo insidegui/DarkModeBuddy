@@ -72,7 +72,7 @@ struct SettingsView: View {
             .disabled(!settings.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
             
             Text(settings.currentSettingsDescription)
-                .font(.callout)
+                .font(.system(size: 11))
                 .foregroundColor(Color(NSColor.tertiaryLabelColor))
 //                .multilineTextAlignment(.center)
                 .lineLimit(nil)

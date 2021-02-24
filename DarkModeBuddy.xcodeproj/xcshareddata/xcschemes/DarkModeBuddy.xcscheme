@@ -55,6 +55,10 @@
             argument = "-ShowSettings YES"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-DMBFakeSensorSupported YES"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
