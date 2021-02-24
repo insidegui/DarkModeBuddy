@@ -53,9 +53,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window.isMovableByWindowBackground = true
             window.delegate = self
         }
-
-        window.makeKeyAndOrderFront(sender)
-        window.center()
+        
+        NSApp.setActivationPolicy(.regular)
+        
+        DispatchQueue.main.async {
+            self.window.makeKeyAndOrderFront(sender)
+            self.window.center()
+            
+            NSApp.activate(ignoringOtherApps: false)
+        }
     }
     
     private var isShowingSettingsWindow: Bool {
@@ -82,15 +88,7 @@ extension AppDelegate: NSWindowDelegate {
             uiReader.invalidate()
         }
     }
-    
-    func windowDidBecomeKey(_ notification: Notification) {
-        NSApp.setActivationPolicy(.regular)
-        
-        DispatchQueue.main.async {
-            NSApp.activate(ignoringOtherApps: false)
-        }
-    }
-    
+
     func windowWillClose(_ notification: Notification) {
         uiReader.invalidate()
         NSApp.setActivationPolicy(.accessory)
