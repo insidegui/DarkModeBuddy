@@ -100,10 +100,10 @@ extension Double {
 extension DMBSettings {
     var currentSettingsDescription: String {
         guard isChangeSystemAppearanceBasedOnAmbientLightEnabled else {
-            return "Dark mode will not be enabled automatically based on ambient light."
+            return "Dark Mode will not be enabled automatically based on ambient light."
         }
         
-        return "Dark mode will be enabled when the ambient light stays below \(darknessThreshold.formattedNoFractionDigits) for over \(darknessThresholdIntervalInSeconds.formattedNoFractionDigits) seconds."
+        return "Dark Mode will be enabled when the ambient light stays below \(darknessThreshold.formattedNoFractionDigits) for over \(darknessThresholdIntervalInSeconds.formattedNoFractionDigits) seconds."
     }
 }
 
