@@ -23,6 +23,8 @@
 		F479414025E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479413F25E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift */; };
 		F479414225E5F5C2001BB982 /* SkyLight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479414125E5F5C2001BB982 /* SkyLight.framework */; };
 		F479414A25E6A93C001BB982 /* UnsupportedMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479414925E6A93C001BB982 /* UnsupportedMacView.swift */; };
+		F479414F25E6BBE1001BB982 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479414E25E6BBE1001BB982 /* Sparkle.framework */; };
+		F479415125E6BBF4001BB982 /* Sparkle.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F479415025E6BBF4001BB982 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F479412925E5EA85001BB982 /* DarkModeBuddyCore.framework in Embed Frameworks */,
+				F479415125E6BBF4001BB982 /* Sparkle.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,6 +72,8 @@
 		F479413F25E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMBAmbientLightSensorReader.swift; sourceTree = "<group>"; };
 		F479414125E5F5C2001BB982 /* SkyLight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SkyLight.framework; path = ../../../../../System/Library/PrivateFrameworks/SkyLight.framework; sourceTree = "<group>"; };
 		F479414925E6A93C001BB982 /* UnsupportedMacView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedMacView.swift; sourceTree = "<group>"; };
+		F479414E25E6BBE1001BB982 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Vendor/Sparkle.framework; sourceTree = "<group>"; };
+		F479415025E6BBF4001BB982 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Vendor/Sparkle.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +82,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F479412825E5EA85001BB982 /* DarkModeBuddyCore.framework in Frameworks */,
+				F479414F25E6BBE1001BB982 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +101,7 @@
 		F47940FD25E5EA5A001BB982 = {
 			isa = PBXGroup;
 			children = (
+				F479415025E6BBF4001BB982 /* Sparkle.framework */,
 				F479410825E5EA5A001BB982 /* DarkModeBuddy */,
 				F479412225E5EA85001BB982 /* DarkModeBuddyCore */,
 				F479410725E5EA5A001BB982 /* Products */,
@@ -171,6 +178,7 @@
 		F479413925E5EB63001BB982 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F479414E25E6BBE1001BB982 /* Sparkle.framework */,
 				F479414125E5F5C2001BB982 /* SkyLight.framework */,
 				F479413A25E5EB63001BB982 /* BezelServices.framework */,
 			);
@@ -494,6 +502,10 @@
 				DEVELOPMENT_TEAM = 8C7439RJLG;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Vendor",
+				);
 				INFOPLIST_FILE = DarkModeBuddy/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -519,6 +531,10 @@
 				DEVELOPMENT_TEAM = 8C7439RJLG;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Vendor",
+				);
 				INFOPLIST_FILE = DarkModeBuddy/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

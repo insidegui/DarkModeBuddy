@@ -28,5 +28,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUFeedURL</key>
+	<string>https://su.darkmodebuddy.app/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>dj8ljUPnwoLj/dLs6HyJg5Ayw+t8zWtgjQUfQsH56ww=</string>
 </dict>
 </plist>
