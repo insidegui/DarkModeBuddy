@@ -1,0 +1,99 @@
+//
+//  AppDelegate.swift
+//  DarkModeBuddy
+//
+//  Created by Guilherme Rambo on 23/02/21.
+//
+
+import Cocoa
+import SwiftUI
+import DarkModeBuddyCore
+
+@main
+class AppDelegate: NSObject, NSApplicationDelegate {
+
+    var window: NSWindow!
+    
+    /// This reader is used by the settings UI.
+    let uiReader = DMBAmbientLightSensorReader(frequency: .realtime)
+    
+    let settings = DMBSettings()
+
+    lazy var switcher: DMBSystemAppearanceSwitcher = {
+        DMBSystemAppearanceSwitcher(settings: settings)
+    }()
+
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
+        if !settings.hasLaunchedAppBefore || UserDefaults.standard.bool(forKey: "ShowSettings") {
+            settings.hasLaunchedAppBefore = true
+            showSettingsWindow(nil)
+        }
+        
+        switcher.activate()
+    }
+    
+    private lazy var settingsView: some View = {
+        SettingsView()
+            .environmentObject(uiReader)
+            .environmentObject(settings)
+    }()
+    
+    @IBAction func showSettingsWindow(_ sender: Any?) {
+        if window == nil {
+            window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 385, height: 340),
+                styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
+                backing: .buffered, defer: false)
+            window.isReleasedWhenClosed = false
+            window.center()
+            window.setFrameAutosaveName("Settings")
+            window.contentView = NSHostingView(rootView: settingsView)
+            window.titlebarAppearsTransparent = true
+            window.title = "DarkModeBuddy Settings"
+            window.isMovableByWindowBackground = true
+            window.delegate = self
+        }
+
+        window.makeKeyAndOrderFront(sender)
+        window.center()
+    }
+    
+    private var isShowingSettingsWindow: Bool {
+        guard let window = window else { return false }
+        return window.isVisible
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        guard !isShowingSettingsWindow else { return true }
+        
+        showSettingsWindow(nil)
+        
+        return true
+    }
+
+}
+
+extension AppDelegate: NSWindowDelegate {
+    
+    func windowDidChangeOcclusionState(_ notification: Notification) {
+        if window.isVisible {
+            uiReader.activate()
+        } else {
+            uiReader.invalidate()
+        }
+    }
+    
+    func windowDidBecomeKey(_ notification: Notification) {
+        NSApp.setActivationPolicy(.regular)
+        
+        DispatchQueue.main.async {
+            NSApp.activate(ignoringOtherApps: false)
+        }
+    }
+    
+    func windowWillClose(_ notification: Notification) {
+        uiReader.invalidate()
+        NSApp.setActivationPolicy(.accessory)
+    }
+    
+}
