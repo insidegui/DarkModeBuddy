@@ -14,9 +14,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var window: NSWindow!
     
-    /// This reader is used by the settings UI.
-    let uiReader = DMBAmbientLightSensorReader(frequency: .realtime)
-    
     let settings = DMBSettings()
 
     lazy var switcher: DMBSystemAppearanceSwitcher = {
@@ -46,7 +43,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.isReleasedWhenClosed = false
         
         let view = SettingsView()
-            .environmentObject(uiReader)
+            .environmentObject(DMBAmbientLightSensorReader(frequency: .realtime))
             .environmentObject(settings)
         
         window.contentView = NSHostingView(rootView: view)
@@ -95,17 +92,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension AppDelegate: NSWindowDelegate {
-    
-    func windowDidChangeOcclusionState(_ notification: Notification) {
-        if window.isVisible {
-            uiReader.activate()
-        } else {
-            uiReader.invalidate()
-        }
-    }
 
     func windowWillClose(_ notification: Notification) {
-        uiReader.invalidate()
         NSApp.setActivationPolicy(.accessory)
         window = nil
     }

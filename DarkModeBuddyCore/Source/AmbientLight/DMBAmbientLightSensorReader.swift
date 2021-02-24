@@ -52,4 +52,6 @@ public final class DMBAmbientLightSensorReader: ObservableObject {
         sensor.invalidate()
     }
     
+    deinit { invalidate() }
+    
 }
