@@ -40,7 +40,7 @@ struct SettingsView: View {
             
             Group {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Go Dark When Ambient Light Falls Bellow:")
+                    Text("Go Dark When Ambient Light Falls Below:")
                     
                     HStack(alignment: .firstTextBaseline) {
                         Slider(value: $settings.darknessThreshold, in: 0...2000)
