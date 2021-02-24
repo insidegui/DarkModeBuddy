@@ -16,8 +16,6 @@
 		F479412825E5EA85001BB982 /* DarkModeBuddyCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479412125E5EA85001BB982 /* DarkModeBuddyCore.framework */; };
 		F479412925E5EA85001BB982 /* DarkModeBuddyCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F479412125E5EA85001BB982 /* DarkModeBuddyCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F479413225E5EA9F001BB982 /* DMBSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479413125E5EA9F001BB982 /* DMBSettings.swift */; };
-		F479413725E5EB2C001BB982 /* DMBAmbientLightSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = F479413525E5EB2C001BB982 /* DMBAmbientLightSensor.m */; };
-		F479413825E5EB2C001BB982 /* DMBAmbientLightSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = F479413625E5EB2C001BB982 /* DMBAmbientLightSensor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F479413B25E5EB63001BB982 /* BezelServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479413A25E5EB63001BB982 /* BezelServices.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F479413D25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479413C25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift */; };
 		F479414025E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479413F25E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift */; };
@@ -27,6 +25,8 @@
 		F479415125E6BBF4001BB982 /* Sparkle.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F479415025E6BBF4001BB982 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F479416825E6C408001BB982 /* SharedFileList.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416625E6C408001BB982 /* SharedFileList.m */; };
 		F479416925E6C408001BB982 /* SharedFileList.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416725E6C408001BB982 /* SharedFileList.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F479416C25E6D24C001BB982 /* DMBAmbientLightSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */; };
+		F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,8 +67,6 @@
 		F479412325E5EA85001BB982 /* DarkModeBuddyCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DarkModeBuddyCore.h; sourceTree = "<group>"; };
 		F479412425E5EA85001BB982 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F479413125E5EA9F001BB982 /* DMBSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMBSettings.swift; sourceTree = "<group>"; };
-		F479413525E5EB2C001BB982 /* DMBAmbientLightSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMBAmbientLightSensor.m; path = ../../../../_Experiments/ambientlight/ambientlight/DMBAmbientLightSensor.m; sourceTree = "<group>"; };
-		F479413625E5EB2C001BB982 /* DMBAmbientLightSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DMBAmbientLightSensor.h; path = ../../../../_Experiments/ambientlight/ambientlight/DMBAmbientLightSensor.h; sourceTree = "<group>"; };
 		F479413A25E5EB63001BB982 /* BezelServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BezelServices.framework; path = ../../../../../System/Library/PrivateFrameworks/BezelServices.framework; sourceTree = "<group>"; };
 		F479413C25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMBSystemAppearanceSwitcher.swift; sourceTree = "<group>"; };
 		F479413F25E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMBAmbientLightSensorReader.swift; sourceTree = "<group>"; };
@@ -78,6 +76,8 @@
 		F479415025E6BBF4001BB982 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Vendor/Sparkle.framework; sourceTree = "<group>"; };
 		F479416625E6C408001BB982 /* SharedFileList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharedFileList.m; sourceTree = "<group>"; };
 		F479416725E6C408001BB982 /* SharedFileList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFileList.h; sourceTree = "<group>"; };
+		F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBAmbientLightSensor.h; sourceTree = "<group>"; };
+		F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBAmbientLightSensor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,8 +165,8 @@
 		F479413325E5EB10001BB982 /* AmbientLight */ = {
 			isa = PBXGroup;
 			children = (
-				F479413625E5EB2C001BB982 /* DMBAmbientLightSensor.h */,
-				F479413525E5EB2C001BB982 /* DMBAmbientLightSensor.m */,
+				F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */,
+				F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */,
 				F479413F25E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift */,
 			);
 			path = AmbientLight;
@@ -242,8 +242,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F479413825E5EB2C001BB982 /* DMBAmbientLightSensor.h in Headers */,
 				F479416925E6C408001BB982 /* SharedFileList.h in Headers */,
+				F479416C25E6D24C001BB982 /* DMBAmbientLightSensor.h in Headers */,
 				F479412525E5EA85001BB982 /* DarkModeBuddyCore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -363,8 +363,8 @@
 				F479414025E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift in Sources */,
 				F479416825E6C408001BB982 /* SharedFileList.m in Sources */,
 				F479413225E5EA9F001BB982 /* DMBSettings.swift in Sources */,
-				F479413725E5EB2C001BB982 /* DMBAmbientLightSensor.m in Sources */,
 				F479413D25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift in Sources */,
+				F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
