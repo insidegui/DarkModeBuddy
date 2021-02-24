@@ -8,6 +8,7 @@
 import Cocoa
 import SwiftUI
 import DarkModeBuddyCore
+import Sparkle
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -19,9 +20,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var switcher: DMBSystemAppearanceSwitcher = {
         DMBSystemAppearanceSwitcher(settings: settings)
     }()
+    
+    private var shouldShowUI: Bool {
+        !settings.hasLaunchedAppBefore || UserDefaults.standard.bool(forKey: "ShowSettings")
+    }
+    
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        SUUpdater.shared()?.delegate = self
+    }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        if !settings.hasLaunchedAppBefore || UserDefaults.standard.bool(forKey: "ShowSettings") {
+        if shouldShowUI {
             settings.hasLaunchedAppBefore = true
             showSettingsWindow(nil)
         }
@@ -48,16 +57,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         window.contentView = NSHostingView(rootView: view)
         
-        NSApp.setActivationPolicy(.regular)
+        window.makeKeyAndOrderFront(nil)
+        window.center()
         
-        DispatchQueue.main.async {
-            self.window.makeKeyAndOrderFront(sender)
-            self.window.center()
-            
-            NSApp.activate(ignoringOtherApps: false)
-        }
+        NSApp.activate(ignoringOtherApps: true)
     }
-    
+
     private var isShowingSettingsWindow: Bool {
         guard let window = window else { return false }
         return window.isVisible
@@ -71,7 +76,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+    private var shouldSkipTerminationConfirmation = false
+    
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard !shouldSkipTerminationConfirmation else { return .terminateNow }
+
         let alert = NSAlert()
         alert.messageText = "Quit DarkModeBuddy?"
         alert.informativeText = "If you quit DarkModeBuddy, it won't be able to monitor your ambient light level and change the system theme automatically. Would you like to hide DarkModeBuddy instead?"
@@ -94,8 +103,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
         window = nil
+    }
+    
+}
+
+extension AppDelegate: SUUpdaterDelegate {
+    
+    func updaterWillRelaunchApplication(_ updater: SUUpdater) {
+        shouldSkipTerminationConfirmation = true
+    }
+    
+    func updater(_ updater: SUUpdater, didCancelInstallUpdateOnQuit item: SUAppcastItem) {
+        shouldSkipTerminationConfirmation = false
     }
     
 }
