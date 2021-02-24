@@ -21,3 +21,4 @@ extern void SLSSetAppearanceThemeLegacy(int);
 #define kDarkModeBuddyCoreSubsystemName "codes.rambo.DarkModeBuddyCore"
 
 #import <DarkModeBuddyCore/DMBAmbientLightSensor.h>
+#import <DarkModeBuddyCore/SharedFileList.h>

@@ -41,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func showSettingsWindow(_ sender: Any?) {
         if window == nil {
             window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 385, height: 340),
+                contentRect: NSRect(x: 0, y: 0, width: 385, height: 360),
                 styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
                 backing: .buffered, defer: false)
             window.isReleasedWhenClosed = false

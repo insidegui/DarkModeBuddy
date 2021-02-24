@@ -21,29 +21,35 @@ struct SettingsView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
+        .padding([.top, .bottom])
+        .padding([.leading, .trailing], 22)
         .onAppear { reader.activate() }
     }
     
     private var settingsControls: some View {
-        VStack(spacing: 32) {
+        VStack(alignment: .leading, spacing: 32) {
+            Toggle(
+                "Launch at Login",
+                isOn: $settings.isLaunchAtLoginEnabled
+            )
+            
             Toggle(
                 "Change Theme Automatically",
                 isOn: $settings.isChangeSystemAppearanceBasedOnAmbientLightEnabled
             )
             
             Group {
-                VStack(spacing: 2) {
-                    HStack {
-                        Text("Go Dark When Ambient Light Falls Bellow:")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Go Dark When Ambient Light Falls Bellow:")
+                    
+                    HStack(alignment: .firstTextBaseline) {
+                        Slider(value: $settings.darknessThreshold, in: 0...2000)
+                            .frame(maxWidth: 300)
                         Text("\(settings.darknessThreshold.formattedNoFractionDigits)")
-                            .font(.system(size: 13, weight: .medium).monospacedDigit())
+                            .font(.system(size: 12, weight: .medium).monospacedDigit())
                     }
                     
-                    Slider(value: $settings.darknessThreshold, in: 0...2000)
-                        .frame(maxWidth: 300)
-                    
-                    HStack {
+                    HStack(alignment: .firstTextBaseline) {
                         Text("Current Ambient Light Level:")
                         Text("\(reader.ambientLightValue.formattedNoFractionDigits)")
                             .font(.system(size: 12).monospacedDigit())
@@ -51,15 +57,16 @@ struct SettingsView: View {
                     .font(.system(size: 12))
                     .foregroundColor(Color(NSColor.secondaryLabelColor))
                     
-                    HStack {
-                        Text("Delay Time:")
-                        Text("\(settings.darknessThresholdIntervalInSeconds.formattedNoFractionDigits)s")
-                            .font(.system(size: 13, weight: .medium).monospacedDigit())
-                    }
-                    .padding(.top, 22)
                     
-                    Slider(value: $settings.darknessThresholdIntervalInSeconds, in: 10...600)
-                        .frame(maxWidth: 300)
+                    Text("Delay Time:")
+                        .padding(.top, 22)
+                    
+                    HStack(alignment: .firstTextBaseline) {
+                        Slider(value: $settings.darknessThresholdIntervalInSeconds, in: 10...600)
+                            .frame(maxWidth: 300)
+                        Text("\(settings.darknessThresholdIntervalInSeconds.formattedNoFractionDigits) s")
+                            .font(.system(size: 12, weight: .medium).monospacedDigit())
+                    }
                 }
             }
             .disabled(!settings.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
@@ -67,7 +74,7 @@ struct SettingsView: View {
             Text(settings.currentSettingsDescription)
                 .font(.callout)
                 .foregroundColor(Color(NSColor.tertiaryLabelColor))
-                .multilineTextAlignment(.center)
+//                .multilineTextAlignment(.center)
                 .lineLimit(nil)
         }
     }
@@ -103,8 +110,9 @@ extension DMBSettings {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
+            .frame(maxWidth: 385)
             .environmentObject(DMBAmbientLightSensorReader(frequency: .realtime))
-            .environmentObject(DMBSettings())
+            .environmentObject(DMBSettings(forPreview: true))
             .previewLayout(.sizeThatFits)
     }
 }

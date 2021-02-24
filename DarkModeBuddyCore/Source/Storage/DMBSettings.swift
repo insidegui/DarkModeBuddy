@@ -24,7 +24,10 @@ public final class DMBSettings: ObservableObject {
     
     private let defaults: UserDefaults
 
-    public init(defaults: UserDefaults = .standard) {
+    let isPreviewing: Bool
+    
+    public init(forPreview isPreviewing: Bool = false, defaults: UserDefaults = .standard) {
+        self.isPreviewing = isPreviewing
         self.defaults = defaults
         
         defaults.register(defaults: [
@@ -39,6 +42,16 @@ public final class DMBSettings: ObservableObject {
         self.darknessThreshold = defaults.optionalDoubleValue(forKey: Keys.darknessThreshold) ?? Keys.defaultDarknessThreshold
         self.darknessThresholdIntervalInSeconds = defaults.optionalDoubleValue(forKey: Keys.darknessThresholdIntervalInSeconds) ?? Keys.defaultDarknessThresholdIntervalInSeconds
         self.ambientLightSmoothingConstant = defaults.optionalDoubleValue(forKey: Keys.ambientLightSmoothingConstant) ?? Keys.defaultAmbientLightSmoothingConstant
+        
+        if isPreviewing {
+            self.isLaunchAtLoginEnabled = false
+        } else {
+            self.isLaunchAtLoginEnabled = Self.isAppInLoginItems
+            
+            SharedFileList.sessionLoginItems().changeHandler = { [weak self] _ in
+                self?.updateLaunchAtLoginEnabled()
+            }
+        }
     }
     
     @Published public var hasLaunchedAppBefore: Bool {
@@ -89,6 +102,32 @@ public final class DMBSettings: ObservableObject {
                 ambientLightSmoothingConstant,
                 forKey: Keys.ambientLightSmoothingConstant
             )
+        }
+    }
+    
+    // MARK: - Launch at login
+    
+    private static var isAppInLoginItems: Bool {
+        SharedFileList.sessionLoginItems().containsItem(Self.appURL)
+    }
+    
+    private func updateLaunchAtLoginEnabled() {
+        isLaunchAtLoginEnabled = Self.isAppInLoginItems
+    }
+    
+    private static var appURL: URL { Bundle.main.bundleURL }
+    
+    @Published public var isLaunchAtLoginEnabled: Bool {
+        didSet {
+            guard !isPreviewing else { return }
+
+            guard isLaunchAtLoginEnabled != oldValue else { return }
+
+            if isLaunchAtLoginEnabled {
+                SharedFileList.sessionLoginItems().addItem(Self.appURL)
+            } else {
+                SharedFileList.sessionLoginItems().removeItem(Self.appURL)
+            }
         }
     }
     
