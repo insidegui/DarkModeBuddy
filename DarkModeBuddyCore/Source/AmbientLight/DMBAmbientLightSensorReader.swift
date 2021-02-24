@@ -15,8 +15,8 @@ public final class DMBAmbientLightSensorReader: ObservableObject {
     
     public enum UpdateFrequency: TimeInterval {
         case realtime = 0.1
-        case fast = 1
-        case slow = 5
+        case fast = 5
+        case slow = 10
     }
     
     let sensor: DMBAmbientLightSensor

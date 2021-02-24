@@ -31,28 +31,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         switcher.activate()
     }
-    
-    private lazy var settingsView: some View = {
-        SettingsView()
+
+    @IBAction func showSettingsWindow(_ sender: Any?) {
+        window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 385, height: 360),
+            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
+            backing: .buffered, defer: false)
+        window.center()
+        window.setFrameAutosaveName("Settings")
+        window.titlebarAppearsTransparent = true
+        window.title = "DarkModeBuddy Settings"
+        window.isMovableByWindowBackground = true
+        window.delegate = self
+        window.isReleasedWhenClosed = false
+        
+        let view = SettingsView()
             .environmentObject(uiReader)
             .environmentObject(settings)
-    }()
-    
-    @IBAction func showSettingsWindow(_ sender: Any?) {
-        if window == nil {
-            window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 385, height: 360),
-                styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
-                backing: .buffered, defer: false)
-            window.isReleasedWhenClosed = false
-            window.center()
-            window.setFrameAutosaveName("Settings")
-            window.contentView = NSHostingView(rootView: settingsView)
-            window.titlebarAppearsTransparent = true
-            window.title = "DarkModeBuddy Settings"
-            window.isMovableByWindowBackground = true
-            window.delegate = self
-        }
+        
+        window.contentView = NSHostingView(rootView: view)
         
         NSApp.setActivationPolicy(.regular)
         
@@ -92,6 +89,7 @@ extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         uiReader.invalidate()
         NSApp.setActivationPolicy(.accessory)
+        window = nil
     }
     
 }
