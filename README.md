@@ -18,7 +18,9 @@ Below is a non-exhaustive list of Mac models that have been verified to work wit
 
 - MacBook Air (M1, 2020)
 - MacBook Pro (M1, 2020)
+- iMac (Retina 5K, 27-inch, 2020)
 - MacBook Pro 16" (2019)
+- MacBook Pro 13" (2019)
 - MacBook Pro 13" (2018)
 - MacBook Pro (Retina, 15-inch, Mid 2015)
 
