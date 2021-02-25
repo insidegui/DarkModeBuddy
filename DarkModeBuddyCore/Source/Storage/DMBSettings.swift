@@ -18,7 +18,7 @@ public final class DMBSettings: ObservableObject {
         static let hasLaunchedAppBefore = "hasLaunchedAppBefore"
         
         static let defaultDarknessThreshold: Double = {
-            DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 30.0 : 52.0
+            DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 20.0 : 52.0
         }()
 
         static let defaultAmbientLightSmoothingConstant: Double = {
