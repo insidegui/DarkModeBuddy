@@ -12,9 +12,17 @@ The solution for that is DarkModeBuddy. It's a tiny app that keeps running in th
 
 # Compatibility
 
-**DarkModeBuddy requires macOS Catalina and a Mac with a built-in ambient light sensor**
+**DarkModeBuddy requires macOS Catalina or later and a Mac with a built-in ambient light sensor. External displays with ambient light sensors are not currently supported.**
 
-The app currently doesn't support older Macs (from before 2018) or external displays with ambient light sensors. Pull requests adding support to hardware that's not currently supported are more than welcome.
+Below is a non-exhaustive list of Mac models that have been verified to work with DarkModeBuddy. If your Mac is newer than any of the models on the list, it is likely to be supported as well.
+
+- MacBook Air (M1, 2020)
+- MacBook Pro (M1, 2020)
+- MacBook Pro 16" (2019)
+- MacBook Pro 13" (2018)
+- MacBook Pro (Retina, 15-inch, Mid 2015)
+
+Pull requests adding support to hardware that's not currently supported are more than welcome.
 
 # Download
 
