@@ -36,6 +36,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         switcher.activate()
+        
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(receivedShutdownNotification),
+            name: NSWorkspace.willPowerOffNotification,
+            object: nil
+        )
     }
 
     @IBAction func showSettingsWindow(_ sender: Any?) {
@@ -96,6 +103,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             return .terminateCancel
         }
+    }
+    
+    @objc func receivedShutdownNotification(_ note: Notification) {
+        shouldSkipTerminationConfirmation = true
     }
 
 }
