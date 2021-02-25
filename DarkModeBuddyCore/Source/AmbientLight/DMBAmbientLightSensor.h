@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isPresent;
 
++ (BOOL)hardwareUsesLegacySensor;
+
 @end
 
 NS_ASSUME_NONNULL_END
