@@ -16,6 +16,7 @@ public final class DMBSettings: ObservableObject {
         static let darknessThresholdIntervalInSeconds = "darknessThresholdIntervalInSeconds"
         static let ambientLightSmoothingConstant = "ambientLightSmoothingConstant"
         static let hasLaunchedAppBefore = "hasLaunchedAppBefore"
+        static let disableAppearanceChangeInClamshellMode = "disableAppearanceChangeInClamshellMode"
         
         static let defaultDarknessThreshold: Double = {
             DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 20.0 : 52.0
@@ -40,7 +41,8 @@ public final class DMBSettings: ObservableObject {
             Keys.darknessThreshold: Keys.defaultDarknessThreshold,
             Keys.isChangeSystemAppearanceBasedOnAmbientLightEnabled: true,
             Keys.darknessThresholdIntervalInSeconds: Keys.defaultDarknessThresholdIntervalInSeconds,
-            Keys.ambientLightSmoothingConstant: Keys.defaultAmbientLightSmoothingConstant
+            Keys.ambientLightSmoothingConstant: Keys.defaultAmbientLightSmoothingConstant,
+            Keys.disableAppearanceChangeInClamshellMode: true
         ])
         
         self.isChangeSystemAppearanceBasedOnAmbientLightEnabled = defaults.bool(forKey: Keys.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
@@ -58,6 +60,10 @@ public final class DMBSettings: ObservableObject {
                 self?.updateLaunchAtLoginEnabled()
             }
         }
+    }
+    
+    var isDisableAppearanceChangeInClamshellModeEnabled: Bool {
+        defaults.bool(forKey: Keys.disableAppearanceChangeInClamshellMode)
     }
     
     @Published public var hasLaunchedAppBefore: Bool {

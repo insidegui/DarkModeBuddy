@@ -27,6 +27,7 @@
 		F479416925E6C408001BB982 /* SharedFileList.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416725E6C408001BB982 /* SharedFileList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F479416C25E6D24C001BB982 /* DMBAmbientLightSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */; };
+		F4EEE7B625E7D58E005E840B /* ClamshellStateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,7 @@
 		F479416725E6C408001BB982 /* SharedFileList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFileList.h; sourceTree = "<group>"; };
 		F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBAmbientLightSensor.h; sourceTree = "<group>"; };
 		F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBAmbientLightSensor.m; sourceTree = "<group>"; };
+		F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClamshellStateChecker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,6 +233,7 @@
 			children = (
 				F479416725E6C408001BB982 /* SharedFileList.h */,
 				F479416625E6C408001BB982 /* SharedFileList.m */,
+				F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -365,6 +368,7 @@
 				F479413225E5EA9F001BB982 /* DMBSettings.swift in Sources */,
 				F479413D25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift in Sources */,
 				F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */,
+				F4EEE7B625E7D58E005E840B /* ClamshellStateChecker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

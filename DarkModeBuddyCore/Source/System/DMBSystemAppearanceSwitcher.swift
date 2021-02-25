@@ -90,11 +90,18 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + settings.darknessThresholdIntervalInSeconds, execute: workItem)
         
-        os_log("Scheduled appearance change to %@ for %@, if conditions remain favorable (interval = %.2f)", log: self.log, type: .debug, newAppearance.description, Date().addingTimeInterval(settings.darknessThresholdIntervalInSeconds).description, settings.darknessThresholdIntervalInSeconds)
+        os_log("Scheduled appearance change to %{public}@ for %{public}@, if conditions remain favorable (interval = %{public}.2f)", log: self.log, type: .debug, newAppearance.description, Date().addingTimeInterval(settings.darknessThresholdIntervalInSeconds).description, settings.darknessThresholdIntervalInSeconds)
     }
     
     private func changeSystemAppearance(to newAppearance: Appearance) {
         guard newAppearance != .current else { return }
+        
+        if settings.isDisableAppearanceChangeInClamshellModeEnabled {
+            guard !ClamshellStateChecker.isClamshellClosed() else {
+                os_log("Skipping appearance change because the Mac is in clamshell mode", log: self.log, type: .debug)
+                return
+            }
+        }
 
         os_log("%{public}@ %{public}@", log: log, type: .debug, #function, newAppearance.description)
         
