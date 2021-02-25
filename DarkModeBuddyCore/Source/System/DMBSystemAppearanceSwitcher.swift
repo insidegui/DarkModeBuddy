@@ -46,7 +46,22 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
             self?.ambientLightChanged(to: newValue)
         }.store(in: &cancellables)
         
+        settings.$darknessThresholdIntervalInSeconds.sink { [weak self] _ in
+            self?.reset()
+        }.store(in: &cancellables)
+        
+        settings.$darknessThreshold.sink { [weak self] _ in
+            self?.reset()
+        }.store(in: &cancellables)
+        
         reader.activate()
+    }
+    
+    private func reset() {
+        candidateAppearance = nil
+        cancelScheduledApperanceChange()
+        
+        evaluateAmbientLight(with: reader.ambientLightValue)
     }
     
     /// The current appearance that we'll change to, assuming the conditions stay favorable.
@@ -60,6 +75,19 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         
         os_log("%{public}@ %.2f", log: log, type: .debug, #function, value)
 
+        evaluateAmbientLight(with: value)
+    }
+    
+    private func cancelScheduledApperanceChange() {
+        guard changeAppearanceWorkItem != nil else { return }
+        
+        changeAppearanceWorkItem?.cancel()
+        changeAppearanceWorkItem = nil
+        
+        os_log("Cancelled scheduled appearance change", log: self.log, type: .debug)
+    }
+    
+    private func evaluateAmbientLight(with value: Double) {
         let newAppearance: Appearance
         
         if value < settings.darknessThreshold {
@@ -71,12 +99,7 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         guard newAppearance != candidateAppearance else { return }
         candidateAppearance = newAppearance
         
-        if changeAppearanceWorkItem != nil {
-            changeAppearanceWorkItem?.cancel()
-            changeAppearanceWorkItem = nil
-            
-            os_log("Cancelled scheduled appearance change", log: self.log, type: .debug)
-        }
+        cancelScheduledApperanceChange()
         
         guard newAppearance != .current else { return }
 
