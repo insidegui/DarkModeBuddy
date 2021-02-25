@@ -27,6 +27,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationWillFinishLaunching(_ notification: Notification) {
         SUUpdater.shared()?.delegate = self
+        
+        if UserDefaults.standard.bool(forKey: "UseRegularActivationPolicy") {
+            NSApp.setActivationPolicy(.regular)
+        }
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {

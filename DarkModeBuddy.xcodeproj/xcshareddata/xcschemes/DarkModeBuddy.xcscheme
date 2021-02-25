@@ -56,6 +56,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-UseRegularActivationPolicy YES"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-DMBFakeSensorSupported YES"
             isEnabled = "NO">
          </CommandLineArgument>
