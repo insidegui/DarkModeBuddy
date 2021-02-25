@@ -23,6 +23,7 @@ Below is a non-exhaustive list of Mac models that have been verified to work wit
 - MacBook Pro 13" (2019)
 - MacBook Pro 13" (2018)
 - MacBook Pro (Retina, 15-inch, Mid 2015)
+- MacBook Pro (Retina, 15-inch, Mid 2014)
 
 Pull requests adding support to hardware that's not currently supported are more than welcome.
 
