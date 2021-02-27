@@ -16,10 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)activate;
 - (void)invalidate;
+- (void)update;
 
 @property (nonatomic, readonly) BOOL isPresent;
 
 + (BOOL)hardwareUsesLegacySensor;
+
 
 @end
 
