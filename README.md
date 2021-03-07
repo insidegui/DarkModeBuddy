@@ -17,8 +17,10 @@ The solution for that is DarkModeBuddy. It's a tiny app that keeps running in th
 Below is a non-exhaustive list of Mac models that have been verified to work with DarkModeBuddy. If your Mac is newer than any of the models on the list, it is likely to be supported as well.
 
 - MacBook Air (M1, 2020)
+- MacBook Air (13-inch, Mid 2013)
 - MacBook Pro (M1, 2020)
 - iMac (Retina 5K, 27-inch, 2020)
+- iMac (27-inch, Late 2012)
 - MacBook Pro 16" (2019)
 - MacBook Pro 13" (2019)
 - MacBook Pro 13" (2018)
