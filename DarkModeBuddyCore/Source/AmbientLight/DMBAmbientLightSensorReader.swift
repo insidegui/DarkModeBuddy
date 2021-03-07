@@ -52,6 +52,10 @@ public final class DMBAmbientLightSensorReader: ObservableObject {
         sensor.invalidate()
     }
     
+    public func update() {
+        sensor.update()
+    }
+    
     deinit { invalidate() }
     
 }

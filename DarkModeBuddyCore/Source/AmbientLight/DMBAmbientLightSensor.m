@@ -68,6 +68,11 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
     return _event;
 }
 
+- (void)update
+{
+    [self _read];
+}
+
 - (void)_read
 {
     if (!self.event) {

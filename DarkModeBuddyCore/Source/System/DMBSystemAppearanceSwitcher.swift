@@ -5,7 +5,7 @@
 //  Created by Guilherme Rambo on 23/02/21.
 //
 
-import Foundation
+import Cocoa
 import Combine
 import os.log
 
@@ -54,7 +54,31 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
             self?.reset()
         }.store(in: &cancellables)
         
+        setupUpdateAppearanceOnWake()
+        
         reader.activate()
+    }
+    
+    private func setupUpdateAppearanceOnWake() {
+        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self?.attemptAppearanceChangeOnWake()
+            }
+        }
+    }
+    
+    private func attemptAppearanceChangeOnWake() {
+        guard settings.isImmediateChangeOnComputerWakeEnabled else { return }
+        
+        reader.update()
+        
+        os_log("%{public}@ %.2f", log: log, type: .debug, #function, reader.ambientLightValue)
+        
+        if reader.ambientLightValue < settings.darknessThreshold {
+            changeSystemAppearance(to: .dark)
+        } else {
+            changeSystemAppearance(to: .light)
+        }
     }
     
     private func reset() {
@@ -88,6 +112,10 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     }
     
     private func evaluateAmbientLight(with value: Double) {
+        #if DEBUG
+        os_log("%{public}@ %{public}.2f", log: log, type: .debug, #function, value)
+        #endif
+        
         let newAppearance: Appearance
         
         if value < settings.darknessThreshold {
