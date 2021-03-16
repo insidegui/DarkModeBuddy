@@ -121,6 +121,11 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         if value < settings.darknessThreshold {
             newAppearance = .dark
         } else {
+            if Appearance.current == .dark {
+                guard value > (settings.darknessThreshold + settings.extraThresholdBeforeRevertingToLightMode) else {
+                    return
+                }
+            }
             newAppearance = .light
         }
         
