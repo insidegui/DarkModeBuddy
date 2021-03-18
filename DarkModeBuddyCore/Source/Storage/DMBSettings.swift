@@ -18,6 +18,7 @@ public final class DMBSettings: ObservableObject {
         static let hasLaunchedAppBefore = "hasLaunchedAppBefore"
         static let disableAppearanceChangeInClamshellMode = "disableAppearanceChangeInClamshellMode"
         static let enableImmediateChangeOnComputerWake = "enableImmediateChangeOnComputerWake"
+        static let extraThresholdBeforeRevertingToLightMode = "extraThresholdBeforeRevertingToLightMode"
         
         static let defaultDarknessThreshold: Double = {
             DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 20.0 : 52.0
@@ -25,6 +26,10 @@ public final class DMBSettings: ObservableObject {
 
         static let defaultAmbientLightSmoothingConstant: Double = {
             DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 5.0 : 3.0
+        }()
+        
+        static let defaultExtraThresholdBeforeRevertingToLightMode: Double = {
+            DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 30.0 : 10.0
         }()
 
         static let defaultDarknessThresholdIntervalInSeconds = 60.0
@@ -44,7 +49,8 @@ public final class DMBSettings: ObservableObject {
             Keys.darknessThresholdIntervalInSeconds: Keys.defaultDarknessThresholdIntervalInSeconds,
             Keys.ambientLightSmoothingConstant: Keys.defaultAmbientLightSmoothingConstant,
             Keys.disableAppearanceChangeInClamshellMode: true,
-            Keys.enableImmediateChangeOnComputerWake: true
+            Keys.enableImmediateChangeOnComputerWake: true,
+            Keys.extraThresholdBeforeRevertingToLightMode: Keys.defaultExtraThresholdBeforeRevertingToLightMode
         ])
         
         self.isChangeSystemAppearanceBasedOnAmbientLightEnabled = defaults.bool(forKey: Keys.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
@@ -52,6 +58,7 @@ public final class DMBSettings: ObservableObject {
         self.darknessThreshold = defaults.optionalDoubleValue(forKey: Keys.darknessThreshold) ?? Keys.defaultDarknessThreshold
         self.darknessThresholdIntervalInSeconds = defaults.optionalDoubleValue(forKey: Keys.darknessThresholdIntervalInSeconds) ?? Keys.defaultDarknessThresholdIntervalInSeconds
         self.ambientLightSmoothingConstant = defaults.optionalDoubleValue(forKey: Keys.ambientLightSmoothingConstant) ?? Keys.defaultAmbientLightSmoothingConstant
+        self.extraThresholdBeforeRevertingToLightMode = defaults.optionalDoubleValue(forKey: Keys.extraThresholdBeforeRevertingToLightMode) ?? Keys.defaultExtraThresholdBeforeRevertingToLightMode
         
         if isPreviewing {
             self.isLaunchAtLoginEnabled = false
@@ -119,6 +126,18 @@ public final class DMBSettings: ObservableObject {
             defaults.set(
                 ambientLightSmoothingConstant,
                 forKey: Keys.ambientLightSmoothingConstant
+            )
+        }
+    }
+    
+    /// When reverting from Dark Mode to Light Mode, the ambient light level must be
+    /// above the user's `darknessThreshold` plus this additional threshold,
+    /// in order to prevent frequent changes when at the edge of the transition.
+    @Published public var extraThresholdBeforeRevertingToLightMode: Double {
+        didSet {
+            defaults.set(
+                extraThresholdBeforeRevertingToLightMode,
+                forKey: Keys.extraThresholdBeforeRevertingToLightMode
             )
         }
     }
