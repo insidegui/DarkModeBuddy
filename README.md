@@ -26,6 +26,7 @@ Below is a non-exhaustive list of Mac models that have been verified to work wit
 - MacBook Pro 13" (2018)
 - MacBook Pro (13-inch, 2016, Four Thunderbolt 3 Ports)
 - MacBook Pro (Retina, 15-inch, Mid 2015)
+- MacBook Pro (Retina, 13-inch, Early 2015)
 - MacBook Pro (Retina, 15-inch, Mid 2014)
 
 Pull requests adding support to hardware that's not currently supported are more than welcome.
