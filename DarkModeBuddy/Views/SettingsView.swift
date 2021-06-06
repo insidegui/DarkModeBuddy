@@ -11,6 +11,12 @@ import DarkModeBuddyCore
 struct SettingsView: View {
     @EnvironmentObject var reader: DMBAmbientLightSensorReader
     @EnvironmentObject var settings: DMBSettings
+
+    private let darknessInterval: ClosedRange<Double> = 0...2000
+
+    @State private var isShowingDarknessValueOutOfBoundsAlert = false
+    @State private var isEditingAmbientLightLevelManually = false
+    @State private var editingAmbientLightManuallyTextFieldStore = ""
     
     var body: some View {
         Group {
@@ -43,10 +49,33 @@ struct SettingsView: View {
                     Text("Go Dark When Ambient Light Falls Below:")
                     
                     HStack(alignment: .firstTextBaseline) {
-                        Slider(value: $settings.darknessThreshold, in: 0...2000)
+                        Slider(value: $settings.darknessThreshold, in: darknessInterval)
                             .frame(maxWidth: 300)
-                        Text("\(settings.darknessThreshold.formattedNoFractionDigits)")
-                            .font(.system(size: 12, weight: .medium).monospacedDigit())
+                        if isEditingAmbientLightLevelManually {
+                            TextField("", text: $editingAmbientLightManuallyTextFieldStore, onCommit: {
+                                guard let newValue = Double(editingAmbientLightManuallyTextFieldStore),
+                                      newValue >= darknessInterval.lowerBound,
+                                      newValue <= darknessInterval.upperBound else {
+                                    isShowingDarknessValueOutOfBoundsAlert = true
+                                    return
+                                }
+                                settings.darknessThreshold = newValue
+                                isEditingAmbientLightLevelManually = false
+                            })
+                            .frame(maxWidth: 40)
+                        } else {
+                            Text("\(settings.darknessThreshold.formattedNoFractionDigits)")
+                                .font(.system(size: 12, weight: .medium).monospacedDigit())
+                                .onTapGesture(count: 2) {
+                                    self.editingAmbientLightManuallyTextFieldStore = "\(settings.darknessThreshold.formattedNoFractionDigits)"
+                                    isEditingAmbientLightLevelManually = true
+                                }
+                        }
+                    }
+                    .alert(isPresented: $isShowingDarknessValueOutOfBoundsAlert) {
+                        Alert(title: Text("Error"),
+                              message: Text("The threshold value must be in the interval [\(darknessInterval.lowerBound.formattedNoFractionDigits), \(darknessInterval.upperBound.formattedNoFractionDigits)]"),
+                              dismissButton: .default(Text("OK")))
                     }
                     
                     HStack(alignment: .firstTextBaseline) {
