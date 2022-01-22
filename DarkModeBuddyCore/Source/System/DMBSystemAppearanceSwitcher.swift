@@ -116,6 +116,8 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         os_log("%{public}@ %{public}.2f", log: log, type: .debug, #function, value)
         #endif
         
+        guard value != -1 else { return }
+        
         let newAppearance: Appearance
         
         if value < settings.darknessThreshold {
