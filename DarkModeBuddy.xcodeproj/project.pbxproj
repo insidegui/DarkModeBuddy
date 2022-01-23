@@ -21,12 +21,12 @@
 		F479414025E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479413F25E5EBE7001BB982 /* DMBAmbientLightSensorReader.swift */; };
 		F479414225E5F5C2001BB982 /* SkyLight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479414125E5F5C2001BB982 /* SkyLight.framework */; };
 		F479414A25E6A93C001BB982 /* UnsupportedMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479414925E6A93C001BB982 /* UnsupportedMacView.swift */; };
-		F479414F25E6BBE1001BB982 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479414E25E6BBE1001BB982 /* Sparkle.framework */; };
 		F479415125E6BBF4001BB982 /* Sparkle.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F479415025E6BBF4001BB982 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F479416825E6C408001BB982 /* SharedFileList.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416625E6C408001BB982 /* SharedFileList.m */; };
 		F479416925E6C408001BB982 /* SharedFileList.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416725E6C408001BB982 /* SharedFileList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F479416C25E6D24C001BB982 /* DMBAmbientLightSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */; };
+		F4AFE37E279DA94B00389779 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F479415025E6BBF4001BB982 /* Sparkle.framework */; };
 		F4EEE7B625E7D58E005E840B /* ClamshellStateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +79,10 @@
 		F479416725E6C408001BB982 /* SharedFileList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFileList.h; sourceTree = "<group>"; };
 		F479416A25E6D24C001BB982 /* DMBAmbientLightSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBAmbientLightSensor.h; sourceTree = "<group>"; };
 		F479416B25E6D24C001BB982 /* DMBAmbientLightSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBAmbientLightSensor.m; sourceTree = "<group>"; };
+		F4AFE37A279DA72900389779 /* Versions.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Versions.xcconfig; sourceTree = "<group>"; };
+		F4AFE37B279DA78100389779 /* Identifiers.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Identifiers.xcconfig; sourceTree = "<group>"; };
+		F4AFE37C279DA7AD00389779 /* _MAIN_.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = _MAIN_.xcconfig; sourceTree = "<group>"; };
+		F4AFE37D279DA89D00389779 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClamshellStateChecker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,7 +92,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F479412825E5EA85001BB982 /* DarkModeBuddyCore.framework in Frameworks */,
-				F479414F25E6BBE1001BB982 /* Sparkle.framework in Frameworks */,
+				F4AFE37E279DA94B00389779 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,7 +111,8 @@
 		F47940FD25E5EA5A001BB982 = {
 			isa = PBXGroup;
 			children = (
-				F479415025E6BBF4001BB982 /* Sparkle.framework */,
+				F4AFE379279DA71A00389779 /* Vendor */,
+				F4AFE378279DA71200389779 /* Config */,
 				F479410825E5EA5A001BB982 /* DarkModeBuddy */,
 				F479412225E5EA85001BB982 /* DarkModeBuddyCore */,
 				F479410725E5EA5A001BB982 /* Products */,
@@ -236,6 +241,25 @@
 				F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		F4AFE378279DA71200389779 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				F4AFE37C279DA7AD00389779 /* _MAIN_.xcconfig */,
+				F4AFE37B279DA78100389779 /* Identifiers.xcconfig */,
+				F4AFE37A279DA72900389779 /* Versions.xcconfig */,
+				F4AFE37D279DA89D00389779 /* Debug.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		F4AFE379279DA71A00389779 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				F479415025E6BBF4001BB982 /* Sparkle.framework */,
+			);
+			name = Vendor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -396,6 +420,7 @@
 /* Begin XCBuildConfiguration section */
 		F479411725E5EA5B001BB982 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4AFE37C279DA7AD00389779 /* _MAIN_.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -435,10 +460,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -457,6 +478,7 @@
 		};
 		F479411825E5EA5B001BB982 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4AFE37C279DA7AD00389779 /* _MAIN_.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -511,6 +533,7 @@
 		};
 		F479411A25E5EA5B001BB982 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4AFE37D279DA89D00389779 /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -525,6 +548,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Vendor",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = DarkModeBuddy/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -532,7 +556,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_BUNDLE_IDENTIFIER = codes.rambo.DarkModeBuddy;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DMB_BUNDLE_ID_PREFIX)DarkModeBuddy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -554,6 +578,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Vendor",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = DarkModeBuddy/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -561,7 +586,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_BUNDLE_IDENTIFIER = codes.rambo.DarkModeBuddy;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DMB_BUNDLE_ID_PREFIX)DarkModeBuddy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -569,11 +594,11 @@
 		};
 		F479412B25E5EA85001BB982 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4AFE37D279DA89D00389779 /* Debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 10;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 8C7439RJLG;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -587,7 +612,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_BUNDLE_IDENTIFIER = codes.rambo.DarkModeBuddyCore;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DMB_BUNDLE_ID_PREFIX)DarkModeBuddyCore";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -596,8 +621,6 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
 				);
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
@@ -607,7 +630,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 10;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 8C7439RJLG;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -621,7 +643,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_BUNDLE_IDENTIFIER = codes.rambo.DarkModeBuddyCore;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(DMB_BUNDLE_ID_PREFIX)DarkModeBuddyCore";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -629,8 +651,6 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
 				);
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};

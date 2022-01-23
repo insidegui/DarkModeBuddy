@@ -1,0 +1,4 @@
+// Main configuration file, used for all build types.
+
+#include "Identifiers.xcconfig"
+#include "Versions.xcconfig"

@@ -1,0 +1,9 @@
+// Configuration file for marketing and build versions.
+
+VERSIONING_SYSTEM = apple-generic
+
+MARKETING_VERSION = 1.2 // Applies to all targets
+
+CURRENT_PROJECT_VERSION = 12 // Applies to all targets
+
+DYLIB_CURRENT_VERSION = $(CURRENT_PROJECT_VERSION)

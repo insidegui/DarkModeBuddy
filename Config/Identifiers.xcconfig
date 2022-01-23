@@ -1,0 +1,2 @@
+// Change to your reverse DNS to build locally without conflicts.
+DMB_BUNDLE_ID_PREFIX=codes.rambo.

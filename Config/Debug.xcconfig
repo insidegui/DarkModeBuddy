@@ -1,0 +1,5 @@
+// Configurations applied only to debug builds
+
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 $(inherited)
+
+OTHER_SWIFT_FLAGS = -D DEBUG
