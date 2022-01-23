@@ -46,17 +46,8 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 {
     if (!(self = [super init])) return nil;
     
-    NSTimeInterval updateInterval = 5;
-    
-    #if DEBUG
-    NSString *overrideInterval = [[NSUserDefaults standardUserDefaults] stringForKey:@"DMBOverrideSensorUpdateInterval"];
-    if ([overrideInterval doubleValue] > 0) {
-        updateInterval = [overrideInterval doubleValue];
-    }
-    #endif
-    
     _value = -1;
-    _updateInterval = updateInterval;
+    _updateInterval = 5;
     _legacySensorInitializedSuccessfully = NO;
     
     self.log = os_log_create(kDarkModeBuddyCoreSubsystemName, "AmbientLightSensor");

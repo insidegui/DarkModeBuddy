@@ -60,10 +60,6 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-DMBOverrideSensorUpdateInterval &quot;0.5&quot;"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "-DMBFakeSystemUsesLegacySensor YES"
             isEnabled = "NO">
          </CommandLineArgument>
