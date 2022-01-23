@@ -17,7 +17,7 @@ struct UnsupportedMacView: View {
                 .font(.system(size: 12, weight: .medium))
             
             Button(action: {
-                NSApp.terminate(nil)
+                NSApp.sendAction(#selector(NSApplication.terminate(_:)), to: nil, from: nil)
             }, label: {
                 Text("Quit")
             })

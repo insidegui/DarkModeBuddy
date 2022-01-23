@@ -48,6 +48,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
     }
+    
+    private lazy var sensorReader = DMBAmbientLightSensorReader(frequency: .realtime)
 
     @IBAction func showSettingsWindow(_ sender: Any?) {
         window = NSWindow(
@@ -63,7 +65,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.isReleasedWhenClosed = false
         
         let view = SettingsView()
-            .environmentObject(DMBAmbientLightSensorReader(frequency: .realtime))
+            .environmentObject(sensorReader)
             .environmentObject(settings)
         
         window.contentView = NSHostingView(rootView: view)
@@ -72,6 +74,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.center()
         
         NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    @IBAction func terminate(_ sender: Any?) {
+        // No need to confirm on quit if the user's Mac is not supported.
+        shouldSkipTerminationConfirmation = !sensorReader.isSensorReady
+        
+        NSApp.terminate(sender)
     }
 
     private var isShowingSettingsWindow: Bool {
