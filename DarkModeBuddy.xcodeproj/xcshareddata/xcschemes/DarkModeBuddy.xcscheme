@@ -53,11 +53,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-ShowSettings YES"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-UseRegularActivationPolicy YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-DMBFakeSystemUsesLegacySensor YES"

@@ -22,15 +22,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }()
     
     private var shouldShowUI: Bool {
-        !settings.hasLaunchedAppBefore || UserDefaults.standard.bool(forKey: "ShowSettings")
+        !settings.hasLaunchedAppBefore
+        || shouldShowSettingsOnNextLaunch
+        || UserDefaults.standard.bool(forKey: "ShowSettings")
     }
     
     func applicationWillFinishLaunching(_ notification: Notification) {
         SUUpdater.shared()?.delegate = self
-        
-        if UserDefaults.standard.bool(forKey: "UseRegularActivationPolicy") {
-            NSApp.setActivationPolicy(.regular)
-        }
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -52,6 +50,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var sensorReader = DMBAmbientLightSensorReader(frequency: .realtime)
 
     @IBAction func showSettingsWindow(_ sender: Any?) {
+        NSApp.setActivationPolicy(.regular)
+        
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 385, height: 360),
             styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
@@ -96,6 +96,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+    private var shouldShowSettingsOnNextLaunch: Bool {
+        get {
+            let value = UserDefaults.standard.bool(forKey: #function)
+            
+            if value {
+                // Reset flag
+                UserDefaults.standard.set(false, forKey: #function)
+            }
+            
+            return value
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: #function)
+            UserDefaults.standard.synchronize()
+        }
+    }
+    
     private var shouldSkipTerminationConfirmation = false
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -127,6 +144,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
+        
         window = nil
     }
     
@@ -136,6 +155,7 @@ extension AppDelegate: SUUpdaterDelegate {
     
     func updaterWillRelaunchApplication(_ updater: SUUpdater) {
         shouldSkipTerminationConfirmation = true
+        shouldShowSettingsOnNextLaunch = true
     }
     
     func updater(_ updater: SUUpdater, didCancelInstallUpdateOnQuit item: SUAppcastItem) {
