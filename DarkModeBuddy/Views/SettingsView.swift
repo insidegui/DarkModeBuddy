@@ -93,7 +93,7 @@ struct SettingsView: View {
                     HStack(alignment: .firstTextBaseline) {
                         Slider(value: $settings.darknessThresholdIntervalInSeconds, in: 10...600)
                             .frame(maxWidth: 300)
-                        Text("\(settings.darknessThresholdIntervalInSeconds.formattedNoFractionDigits) s")
+                        Text(settings.darknessThresholdIntervalInSeconds.formattedTime)
                             .font(.system(size: 12, weight: .medium).monospacedDigit())
                     }
                 }
@@ -123,6 +123,11 @@ extension NumberFormatter {
 extension Double {
     var formattedNoFractionDigits: String {
         NumberFormatter.noFractionDigits.string(from: NSNumber(value: self)) ?? "!!!"
+    }
+    var formattedTime: String {
+        var formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.string(from: self) ?? "!!!"
     }
 }
 
