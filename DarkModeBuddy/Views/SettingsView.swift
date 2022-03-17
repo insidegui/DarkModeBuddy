@@ -91,10 +91,10 @@ struct SettingsView: View {
                         .padding(.top, 22)
                     
                     HStack(alignment: .firstTextBaseline) {
-                        Slider(value: $settings.darknessThresholdIntervalInSeconds, in: 10...600)
-                            .frame(maxWidth: 300)
-                        Text("\(settings.darknessThresholdIntervalInSeconds.formattedNoFractionDigits) s")
+                        Slider(value: $settings.darknessThresholdIntervalInSeconds, in: 15...600, step: 15)
+                        Text(settings.darknessThresholdIntervalInSeconds.formattedTime)
                             .font(.system(size: 12, weight: .medium).monospacedDigit())
+                            .frame(width: 50, alignment: .trailing)
                     }
                 }
             }
@@ -124,6 +124,16 @@ extension Double {
     var formattedNoFractionDigits: String {
         NumberFormatter.noFractionDigits.string(from: NSNumber(value: self)) ?? "!!!"
     }
+    var formattedTime: String {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        return (formatter.string(from: self) ?? "!!!" ) + "s"
+    }
+    var formattedLongTime: String {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        return formatter.string(from: self) ?? "!!!"
+    }
 }
 
 extension DMBSettings {
@@ -132,7 +142,7 @@ extension DMBSettings {
             return "Dark Mode will not be enabled automatically based on ambient light."
         }
         
-        return "Dark Mode will be enabled when the ambient light stays below \(darknessThreshold.formattedNoFractionDigits) for over \(darknessThresholdIntervalInSeconds.formattedNoFractionDigits) seconds."
+        return "Dark Mode will be enabled when the ambient light stays below \(darknessThreshold.formattedNoFractionDigits) for over \(darknessThresholdIntervalInSeconds.formattedLongTime)."
     }
 }
 
