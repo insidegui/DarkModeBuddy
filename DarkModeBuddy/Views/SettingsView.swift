@@ -11,9 +11,9 @@ import DarkModeBuddyCore
 struct SettingsView: View {
     @EnvironmentObject var reader: DMBAmbientLightSensorReader
     @EnvironmentObject var settings: DMBSettings
-
+    
     private let darknessInterval: ClosedRange<Double> = 0...2000
-
+    
     @State private var isShowingDarknessValueOutOfBoundsAlert = false
     @State private var isEditingAmbientLightLevelManually = false
     @State private var editingAmbientLightManuallyTextFieldStore = ""
@@ -51,6 +51,7 @@ struct SettingsView: View {
                     HStack(alignment: .firstTextBaseline) {
                         Slider(value: $settings.darknessThreshold, in: darknessInterval)
                             .frame(maxWidth: 300)
+                        
                         if isEditingAmbientLightLevelManually {
                             TextField("", text: $editingAmbientLightManuallyTextFieldStore, onCommit: {
                                 guard let newValue = Double(editingAmbientLightManuallyTextFieldStore),
@@ -103,7 +104,7 @@ struct SettingsView: View {
             Text(settings.currentSettingsDescription)
                 .font(.system(size: 11))
                 .foregroundColor(Color(NSColor.tertiaryLabelColor))
-//                .multilineTextAlignment(.center)
+            //                .multilineTextAlignment(.center)
                 .lineLimit(nil)
         }
     }
