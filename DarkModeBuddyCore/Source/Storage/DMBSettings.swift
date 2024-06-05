@@ -101,6 +101,10 @@ public final class DMBSettings: ObservableObject {
     /// The threshold below which the ambient light is considered "dark".
     @Published public var darknessThreshold: Double {
         didSet {
+            DispatchQueue.main.async { // haptic feedback - #2
+                NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .default)
+            }
+            
             defaults.set(
                 darknessThreshold,
                 forKey: Keys.darknessThreshold
@@ -112,6 +116,10 @@ public final class DMBSettings: ObservableObject {
     /// it for the system appearance to be changed based on that.
     @Published public var darknessThresholdIntervalInSeconds: TimeInterval {
         didSet {
+            DispatchQueue.main.async { // haptic feedback - #2
+                NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .default)
+            }
+
             defaults.set(
                 darknessThresholdIntervalInSeconds,
                 forKey: Keys.darknessThresholdIntervalInSeconds
