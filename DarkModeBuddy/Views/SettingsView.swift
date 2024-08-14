@@ -12,7 +12,7 @@ struct SettingsView: View {
     @EnvironmentObject var reader: DMBAmbientLightSensorReader
     @EnvironmentObject var settings: DMBSettings
 
-    private let darknessInterval: ClosedRange<Double> = 0...2000
+    private let darknessInterval: ClosedRange<Double> = 0...3000
 
     @State private var isShowingDarknessValueOutOfBoundsAlert = false
     @State private var isEditingAmbientLightLevelManually = false
