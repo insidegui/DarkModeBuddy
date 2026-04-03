@@ -8,8 +8,66 @@
 import Foundation
 import SwiftUI
 
+/// Mode for time-based scheduling of the brightness threshold.
+public enum TimeScheduleMode: Int, CaseIterable, Identifiable {
+    case disabled = 0
+    case fixedTime = 1
+    case solarRelative = 2
+
+    public var id: Int { rawValue }
+
+    public var label: String {
+        switch self {
+        case .disabled: return "Always Active"
+        case .fixedTime: return "Fixed Time Window"
+        case .solarRelative: return "Relative to Sunset/Sunrise"
+        }
+    }
+}
+
+/// Predefined offset options (in minutes) for solar-relative scheduling.
+public enum SolarOffset: Int, CaseIterable, Identifiable {
+    case minusFourHours = -240
+    case minusThreeHours = -180
+    case minusTwoHours = -120
+    case minusOneHour = -60
+    case minusFortyFive = -45
+    case minusThirty = -30
+    case minusFifteen = -15
+    case atEvent = 0
+    case plusFifteen = 15
+    case plusThirty = 30
+    case plusFortyFive = 45
+    case plusOneHour = 60
+    case plusTwoHours = 120
+    case plusThreeHours = 180
+    case plusFourHours = 240
+
+    public var id: Int { rawValue }
+
+    public var label: String {
+        let hours = abs(rawValue) / 60
+        let mins = abs(rawValue) % 60
+        if rawValue < 0 {
+            if mins == 0 {
+                return "-\(hours):00"
+            } else {
+                return "-\(hours):\(String(format: "%02d", mins))"
+            }
+        } else if rawValue == 0 {
+            return "At event"
+        } else {
+            if mins == 0 {
+                return "+\(hours):00"
+            } else {
+                return "+\(hours):\(String(format: "%02d", mins))"
+            }
+        }
+    }
+}
+
 public final class DMBSettings: ObservableObject {
-    
+
     private struct Keys {
         static let darknessThreshold = "darknessThreshold"
         static let isChangeSystemAppearanceBasedOnAmbientLightEnabled = "isChangeSystemAppearanceBasedOnAmbientLightEnabled"
@@ -19,6 +77,15 @@ public final class DMBSettings: ObservableObject {
         static let disableAppearanceChangeInClamshellMode = "disableAppearanceChangeInClamshellMode"
         static let enableImmediateChangeOnComputerWake = "enableImmediateChangeOnComputerWake"
         static let extraThresholdBeforeRevertingToLightMode = "extraThresholdBeforeRevertingToLightMode"
+
+        // Time scheduling keys
+        static let timeScheduleMode = "timeScheduleMode"
+        static let fixedStartHour = "fixedStartHour"
+        static let fixedStartMinute = "fixedStartMinute"
+        static let fixedEndHour = "fixedEndHour"
+        static let fixedEndMinute = "fixedEndMinute"
+        static let sunsetOffsetMinutes = "sunsetOffsetMinutes"
+        static let sunriseOffsetMinutes = "sunriseOffsetMinutes"
         
         static let defaultDarknessThreshold: Double = {
             DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 20.0 : 52.0
@@ -50,15 +117,29 @@ public final class DMBSettings: ObservableObject {
             Keys.ambientLightSmoothingConstant: Keys.defaultAmbientLightSmoothingConstant,
             Keys.disableAppearanceChangeInClamshellMode: true,
             Keys.enableImmediateChangeOnComputerWake: true,
-            Keys.extraThresholdBeforeRevertingToLightMode: Keys.defaultExtraThresholdBeforeRevertingToLightMode
+            Keys.extraThresholdBeforeRevertingToLightMode: Keys.defaultExtraThresholdBeforeRevertingToLightMode,
+            Keys.timeScheduleMode: TimeScheduleMode.disabled.rawValue,
+            Keys.fixedStartHour: 18,
+            Keys.fixedStartMinute: 0,
+            Keys.fixedEndHour: 7,
+            Keys.fixedEndMinute: 0,
+            Keys.sunsetOffsetMinutes: SolarOffset.atEvent.rawValue,
+            Keys.sunriseOffsetMinutes: SolarOffset.atEvent.rawValue
         ])
-        
+
         self.isChangeSystemAppearanceBasedOnAmbientLightEnabled = defaults.bool(forKey: Keys.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
         self.hasLaunchedAppBefore = defaults.bool(forKey: Keys.hasLaunchedAppBefore)
         self.darknessThreshold = defaults.optionalDoubleValue(forKey: Keys.darknessThreshold) ?? Keys.defaultDarknessThreshold
         self.darknessThresholdIntervalInSeconds = defaults.optionalDoubleValue(forKey: Keys.darknessThresholdIntervalInSeconds) ?? Keys.defaultDarknessThresholdIntervalInSeconds
         self.ambientLightSmoothingConstant = defaults.optionalDoubleValue(forKey: Keys.ambientLightSmoothingConstant) ?? Keys.defaultAmbientLightSmoothingConstant
         self.extraThresholdBeforeRevertingToLightMode = defaults.optionalDoubleValue(forKey: Keys.extraThresholdBeforeRevertingToLightMode) ?? Keys.defaultExtraThresholdBeforeRevertingToLightMode
+        self.timeScheduleMode = TimeScheduleMode(rawValue: defaults.integer(forKey: Keys.timeScheduleMode)) ?? .disabled
+        self.fixedStartHour = defaults.integer(forKey: Keys.fixedStartHour)
+        self.fixedStartMinute = defaults.integer(forKey: Keys.fixedStartMinute)
+        self.fixedEndHour = defaults.integer(forKey: Keys.fixedEndHour)
+        self.fixedEndMinute = defaults.integer(forKey: Keys.fixedEndMinute)
+        self.sunsetOffsetMinutes = defaults.integer(forKey: Keys.sunsetOffsetMinutes)
+        self.sunriseOffsetMinutes = defaults.integer(forKey: Keys.sunriseOffsetMinutes)
         
         if isPreviewing {
             self.isLaunchAtLoginEnabled = false
@@ -141,7 +222,46 @@ public final class DMBSettings: ObservableObject {
             )
         }
     }
-    
+
+    // MARK: - Time Scheduling
+
+    /// The mode for time-based scheduling of brightness threshold.
+    @Published public var timeScheduleMode: TimeScheduleMode {
+        didSet {
+            defaults.set(timeScheduleMode.rawValue, forKey: Keys.timeScheduleMode)
+        }
+    }
+
+    /// Fixed schedule start hour (0-23).
+    @Published public var fixedStartHour: Int {
+        didSet { defaults.set(fixedStartHour, forKey: Keys.fixedStartHour) }
+    }
+
+    /// Fixed schedule start minute (0-59).
+    @Published public var fixedStartMinute: Int {
+        didSet { defaults.set(fixedStartMinute, forKey: Keys.fixedStartMinute) }
+    }
+
+    /// Fixed schedule end hour (0-23).
+    @Published public var fixedEndHour: Int {
+        didSet { defaults.set(fixedEndHour, forKey: Keys.fixedEndHour) }
+    }
+
+    /// Fixed schedule end minute (0-59).
+    @Published public var fixedEndMinute: Int {
+        didSet { defaults.set(fixedEndMinute, forKey: Keys.fixedEndMinute) }
+    }
+
+    /// Offset in minutes from sunset for the schedule start.
+    @Published public var sunsetOffsetMinutes: Int {
+        didSet { defaults.set(sunsetOffsetMinutes, forKey: Keys.sunsetOffsetMinutes) }
+    }
+
+    /// Offset in minutes from sunrise for the schedule end.
+    @Published public var sunriseOffsetMinutes: Int {
+        didSet { defaults.set(sunriseOffsetMinutes, forKey: Keys.sunriseOffsetMinutes) }
+    }
+
     // MARK: - Launch at login
     
     private static var isAppInLoginItems: Bool {

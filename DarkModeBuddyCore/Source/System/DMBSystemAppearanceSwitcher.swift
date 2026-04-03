@@ -28,35 +28,96 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     }
     
     private let log = OSLog(subsystem: kDarkModeBuddyCoreSubsystemName, category: String(describing: DMBSystemAppearanceSwitcher.self))
-    
+
     let settings: DMBSettings
     let reader: DMBAmbientLightSensorReader
-    
+    public var timeScheduleManager: TimeScheduleManager?
+
     private var cancellables = Set<AnyCancellable>()
-    
+
+    /// Tracks whether macOS Auto dark mode was enabled before we disabled it.
+    private static let savedAutoSwitchKey = "DMBSavedAppleInterfaceStyleSwitchesAutomatically"
+    private static let didOverrideAutoKey = "DMBDidOverrideAutoSwitch"
+
+    private var globalDefaults: UserDefaults? {
+        UserDefaults(suiteName: UserDefaults.globalDomain)
+    }
+
+    private var macOSAutoSwitchEnabled: Bool {
+        get {
+            globalDefaults?.bool(forKey: "AppleInterfaceStyleSwitchesAutomatically") ?? false
+        }
+        set {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/defaults")
+            process.arguments = ["write", "-g", "AppleInterfaceStyleSwitchesAutomatically", "-bool", newValue ? "true" : "false"]
+            try? process.run()
+            process.waitUntilExit()
+        }
+    }
+
     public init(settings: DMBSettings,
                 reader: DMBAmbientLightSensorReader = DMBAmbientLightSensorReader(frequency: .fast))
     {
         self.settings = settings
         self.reader = reader
     }
-    
+
     public func activate() {
         reader.$ambientLightValue.sink { [weak self] newValue in
             self?.ambientLightChanged(to: newValue)
         }.store(in: &cancellables)
-        
-        settings.$darknessThresholdIntervalInSeconds.sink { [weak self] _ in
+
+        settings.$darknessThresholdIntervalInSeconds.removeDuplicates().sink { [weak self] _ in
             self?.reset()
         }.store(in: &cancellables)
-        
-        settings.$darknessThreshold.sink { [weak self] _ in
+
+        settings.$darknessThreshold.removeDuplicates().sink { [weak self] _ in
             self?.reset()
         }.store(in: &cancellables)
-        
+
+        // Re-evaluate when the time schedule window changes
+        timeScheduleManager?.$isWithinSchedule.removeDuplicates().sink { [weak self] _ in
+            self?.reset()
+        }.store(in: &cancellables)
+
+        // Disable/restore macOS Auto when the toggle changes
+        settings.$isChangeSystemAppearanceBasedOnAmbientLightEnabled.sink { [weak self] enabled in
+            if enabled {
+                self?.disableMacOSAutoDarkMode()
+            } else {
+                self?.restoreMacOSAutoDarkMode()
+            }
+        }.store(in: &cancellables)
+
         setupUpdateAppearanceOnWake()
-        
+
         reader.activate()
+    }
+
+    // MARK: - macOS Auto Dark Mode Management
+
+    /// Disables macOS built-in Auto dark mode and saves its previous state.
+    private func disableMacOSAutoDarkMode() {
+        let wasAuto = macOSAutoSwitchEnabled
+        if wasAuto {
+            UserDefaults.standard.set(true, forKey: Self.savedAutoSwitchKey)
+            UserDefaults.standard.set(true, forKey: Self.didOverrideAutoKey)
+            macOSAutoSwitchEnabled = false
+            os_log("Disabled macOS Auto dark mode (was enabled)", log: log, type: .debug)
+        }
+    }
+
+    /// Restores macOS Auto dark mode to its previous state if we disabled it.
+    public func restoreMacOSAutoDarkMode() {
+        guard UserDefaults.standard.bool(forKey: Self.didOverrideAutoKey) else { return }
+        let savedValue = UserDefaults.standard.bool(forKey: Self.savedAutoSwitchKey)
+        if savedValue {
+            macOSAutoSwitchEnabled = true
+            os_log("Restored macOS Auto dark mode", log: log, type: .debug)
+        }
+        UserDefaults.standard.removeObject(forKey: Self.didOverrideAutoKey)
+        UserDefaults.standard.removeObject(forKey: Self.savedAutoSwitchKey)
     }
     
     private func setupUpdateAppearanceOnWake() {
@@ -114,13 +175,20 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     private func evaluateAmbientLight(with value: Double) {
         #if DEBUG
         os_log("%{public}@ %{public}.2f", log: log, type: .debug, #function, value)
+        os_log("Candidate appearance is %@", log: self.log, type: .debug, candidateAppearance?.description ?? "")
         #endif
-        
+
         guard value != -1 else { return }
-        
+
         let newAppearance: Appearance
-        
-        if value < settings.darknessThreshold {
+
+        // If a time constraint is set and we're outside the window, force light mode.
+        // Otherwise, apply the normal brightness-based logic.
+        if let scheduleManager = timeScheduleManager, !scheduleManager.isWithinSchedule {
+            os_log("Outside time schedule, forcing light mode", log: self.log, type: .debug)
+            newAppearance = .light
+        } else if value < settings.darknessThreshold {
+            os_log("Below threshold %{public}.2f", log: self.log, type: .debug, settings.darknessThreshold)
             newAppearance = .dark
         } else {
             if Appearance.current == .dark {
@@ -128,6 +196,7 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
                     return
                 }
             }
+            os_log("Above threshold %{public}.2f", log: self.log, type: .debug, settings.darknessThreshold)
             newAppearance = .light
         }
         
@@ -153,7 +222,7 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     
     private func changeSystemAppearance(to newAppearance: Appearance) {
         guard newAppearance != .current else { return }
-        
+
         if settings.isDisableAppearanceChangeInClamshellModeEnabled {
             guard !ClamshellStateChecker.isClamshellClosed() else {
                 os_log("Skipping appearance change because the Mac is in clamshell mode", log: self.log, type: .debug)
@@ -162,12 +231,12 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         }
 
         os_log("%{public}@ %{public}@", log: log, type: .debug, #function, newAppearance.description)
-        
+
         guard settings.isChangeSystemAppearanceBasedOnAmbientLightEnabled else {
             os_log("Automatic appearance change disabled in settings", log: self.log, type: .debug)
             return
         }
-        
+
         SLSSetAppearanceThemeLegacy(newAppearance.rawValue)
     }
     

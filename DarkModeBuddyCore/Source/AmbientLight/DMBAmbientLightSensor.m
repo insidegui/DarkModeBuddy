@@ -33,6 +33,15 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 @end
 
+static BOOL DMBIsRunningInPreview(void) {
+    static BOOL _isPreview;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _isPreview = [[[NSProcessInfo processInfo] environment] objectForKey:@"XCODE_RUNNING_FOR_PLAYGROUNDS"] != nil;
+    });
+    return _isPreview;
+}
+
 @implementation DMBAmbientLightSensor
 {
     IOHIDServiceClientRef _client;
@@ -58,6 +67,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 - (IOHIDEventRef)copyHIDEvent
 {
 #if DEBUG
+    if (DMBIsRunningInPreview()) return NULL;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DMBFakeSystemUsesLegacySensor"]) return NULL;
 #endif
     
@@ -152,6 +162,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 - (void)activate
 {
+    if (DMBIsRunningInPreview()) return;
     [self _setupUpdateTimer];
     [self _read];
 }
@@ -171,6 +182,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 - (BOOL)isPresent
 {
+    if (DMBIsRunningInPreview()) return YES;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DMBFakeSensorSupported"]) return YES;
     
     return [self _canGetHIDEvent] || _legacySensorInitializedSuccessfully;
@@ -181,7 +193,11 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
     static BOOL _usesLegacySensor;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _usesLegacySensor = (ALCALSCopyALSServiceClient() == NULL);
+        if (DMBIsRunningInPreview()) {
+            _usesLegacySensor = NO;
+        } else {
+            _usesLegacySensor = (ALCALSCopyALSServiceClient() == NULL);
+        }
     });
     return _usesLegacySensor;
 }

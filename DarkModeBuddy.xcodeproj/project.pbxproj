@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA00000125F00001001BB982 /* SolarCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000025F00001001BB982 /* SolarCalculator.swift */; };
+		AA00000325F00002001BB982 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000225F00002001BB982 /* LocationManager.swift */; };
+		AA00000525F00003001BB982 /* TimeScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000425F00003001BB982 /* TimeScheduleManager.swift */; };
 		F479410A25E5EA5A001BB982 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479410925E5EA5A001BB982 /* AppDelegate.swift */; };
 		F479410C25E5EA5A001BB982 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479410B25E5EA5A001BB982 /* SettingsView.swift */; };
 		F479410E25E5EA5B001BB982 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F479410D25E5EA5B001BB982 /* Assets.xcassets */; };
@@ -56,6 +59,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA00000025F00001001BB982 /* SolarCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarCalculator.swift; sourceTree = "<group>"; };
+		AA00000225F00002001BB982 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		AA00000425F00003001BB982 /* TimeScheduleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeScheduleManager.swift; sourceTree = "<group>"; };
 		F479410625E5EA5A001BB982 /* DarkModeBuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DarkModeBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F479410925E5EA5A001BB982 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F479410B25E5EA5A001BB982 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -201,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				F479413C25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift */,
+				AA00000425F00003001BB982 /* TimeScheduleManager.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -239,6 +246,8 @@
 				F479416725E6C408001BB982 /* SharedFileList.h */,
 				F479416625E6C408001BB982 /* SharedFileList.m */,
 				F4EEE7B525E7D58E005E840B /* ClamshellStateChecker.swift */,
+				AA00000025F00001001BB982 /* SolarCalculator.swift */,
+				AA00000225F00002001BB982 /* LocationManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -393,6 +402,9 @@
 				F479413D25E5EBAE001BB982 /* DMBSystemAppearanceSwitcher.swift in Sources */,
 				F479416D25E6D24C001BB982 /* DMBAmbientLightSensor.m in Sources */,
 				F4EEE7B625E7D58E005E840B /* ClamshellStateChecker.swift in Sources */,
+				AA00000125F00001001BB982 /* SolarCalculator.swift in Sources */,
+				AA00000325F00002001BB982 /* LocationManager.swift in Sources */,
+				AA00000525F00003001BB982 /* TimeScheduleManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
