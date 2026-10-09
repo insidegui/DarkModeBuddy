@@ -33,6 +33,15 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 @end
 
+static BOOL DMBIsRunningInPreview(void) {
+    static BOOL _isPreview;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _isPreview = [[[NSProcessInfo processInfo] environment] objectForKey:@"XCODE_RUNNING_FOR_PLAYGROUNDS"] != nil;
+    });
+    return _isPreview;
+}
+
 @implementation DMBAmbientLightSensor
 {
     IOHIDServiceClientRef _client;
@@ -40,6 +49,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
     io_connect_t _legacySensorDataPort;
     BOOL _legacySensorInitializedSuccessfully;
+    BOOL _didLogLegacySensorFailure;
 }
 
 - (instancetype)init
@@ -58,6 +68,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 - (IOHIDEventRef)copyHIDEvent
 {
 #if DEBUG
+    if (DMBIsRunningInPreview()) return NULL;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DMBFakeSystemUsesLegacySensor"]) return NULL;
 #endif
     
@@ -80,13 +91,27 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
     IOHIDEventRef event = [self copyHIDEvent];
     
     if (!event) {
-        [self _readLegacy];
+        if ([self _shouldUseLegacySensor]) {
+            [self _readLegacy];
+        } else {
+            // Modern sensor temporarily unavailable (e.g. while asleep), there's no legacy sensor to fall back to.
+            self.value = -1;
+        }
         return;
     }
     
     self.value = IOHIDEventGetFloatValue(event, IOHIDEventFieldBase(kAmbientLightSensorEvent));
     
     CFRelease(event);
+}
+
+- (BOOL)_shouldUseLegacySensor
+{
+#if DEBUG
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DMBFakeSystemUsesLegacySensor"]) return YES;
+#endif
+
+    return [DMBAmbientLightSensor hardwareUsesLegacySensor];
 }
 
 - (void)_initializeLegacySensorObject
@@ -98,13 +123,20 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
     if (!_legacySensorInitializedSuccessfully) {
         legacySensorObject = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("AppleLMUController"));
         if (!legacySensorObject) {
-            os_log_fault(self.log, "Failed to initialize AppleLMUController");
+            if (!_didLogLegacySensorFailure) {
+                _didLogLegacySensorFailure = YES;
+                os_log_fault(self.log, "Failed to initialize AppleLMUController");
+            }
             return;
         }
     }
     
     if (IOServiceOpen(legacySensorObject, mach_task_self(), 0, &_legacySensorDataPort) != KERN_SUCCESS) {
-        os_log_fault(self.log, "Failed to open AppleLMUController service");
+        IOObjectRelease(legacySensorObject);
+        if (!_didLogLegacySensorFailure) {
+            _didLogLegacySensorFailure = YES;
+            os_log_fault(self.log, "Failed to open AppleLMUController service");
+        }
         return;
     }
     
@@ -152,6 +184,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 - (void)activate
 {
+    if (DMBIsRunningInPreview()) return;
     [self _setupUpdateTimer];
     [self _read];
 }
@@ -171,6 +204,7 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
 
 - (BOOL)isPresent
 {
+    if (DMBIsRunningInPreview()) return YES;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DMBFakeSensorSupported"]) return YES;
     
     return [self _canGetHIDEvent] || _legacySensorInitializedSuccessfully;
@@ -181,7 +215,11 @@ extern IOHIDServiceClientRef ALCALSCopyALSServiceClient(void);
     static BOOL _usesLegacySensor;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _usesLegacySensor = (ALCALSCopyALSServiceClient() == NULL);
+        if (DMBIsRunningInPreview()) {
+            _usesLegacySensor = NO;
+        } else {
+            _usesLegacySensor = (ALCALSCopyALSServiceClient() == NULL);
+        }
     });
     return _usesLegacySensor;
 }

@@ -26,6 +26,10 @@
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSLocationUsageDescription</key>
+	<string>DarkModeBuddy needs your location to calculate sunrise and sunset times for time-based dark mode scheduling.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>DarkModeBuddy needs your location to calculate sunrise and sunset times for time-based dark mode scheduling.</string>
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSPrincipalClass</key>

@@ -14,11 +14,18 @@ import Sparkle
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var window: NSWindow!
-    
-    let settings = DMBSettings()
+
+    lazy var settings = DMBSettings()
+    lazy var locationManager = LocationManager()
+
+    lazy var timeScheduleManager: TimeScheduleManager = {
+        TimeScheduleManager(settings: settings, locationManager: locationManager)
+    }()
 
     lazy var switcher: DMBSystemAppearanceSwitcher = {
-        DMBSystemAppearanceSwitcher(settings: settings)
+        let s = DMBSystemAppearanceSwitcher(settings: settings)
+        s.timeScheduleManager = timeScheduleManager
+        return s
     }()
     
     private var shouldShowUI: Bool {
@@ -28,17 +35,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationWillFinishLaunching(_ notification: Notification) {
+        guard !isRunningInPreview else { return }
         SUUpdater.shared()?.delegate = self
     }
 
+    private var isRunningInPreview: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PLAYGROUNDS"] != nil
+    }
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        guard !isRunningInPreview else { return }
+
         if shouldShowUI {
             settings.hasLaunchedAppBefore = true
             showSettingsWindow(nil)
         }
         
+        timeScheduleManager.activate()
         switcher.activate()
-        
+
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
             selector: #selector(receivedShutdownNotification),
@@ -53,7 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.regular)
         
         window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 385, height: 360),
+            contentRect: NSRect(x: 0, y: 0, width: 420, height: 580),
             styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         window.center()
@@ -67,8 +82,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let view = SettingsView()
             .environmentObject(sensorReader)
             .environmentObject(settings)
+            .environmentObject(locationManager)
+            .environmentObject(timeScheduleManager)
         
-        window.contentView = NSHostingView(rootView: view)
+        let hostingController = AutoSizingHostingController(rootView: view)
+        window.contentViewController = hostingController
         
         window.makeKeyAndOrderFront(nil)
         window.center()
@@ -116,7 +134,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var shouldSkipTerminationConfirmation = false
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        guard !shouldSkipTerminationConfirmation else { return .terminateNow }
+        guard !shouldSkipTerminationConfirmation else {
+            switcher.restoreMacOSAutoDarkMode()
+            return .terminateNow
+        }
 
         let alert = NSAlert()
         alert.messageText = "Quit DarkModeBuddy?"
@@ -127,6 +148,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let result = alert.runModal()
 
         if result == .alertSecondButtonReturn {
+            switcher.restoreMacOSAutoDarkMode()
             return .terminateNow
         } else {
             window?.close()
@@ -149,6 +171,21 @@ extension AppDelegate: NSWindowDelegate {
         window = nil
     }
     
+}
+
+final class AutoSizingHostingController<Content: View>: NSHostingController<Content> {
+    override func viewDidLayout() {
+        super.viewDidLayout()
+        guard let window = view.window else { return }
+        let fittingSize = view.fittingSize
+        let targetSize = NSSize(
+            width: max(fittingSize.width, 420),
+            height: fittingSize.height
+        )
+        if window.contentView?.frame.size != targetSize {
+            window.setContentSize(targetSize)
+        }
+    }
 }
 
 extension AppDelegate: SUUpdaterDelegate {
