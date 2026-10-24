@@ -10,6 +10,22 @@ import SwiftUI
 
 public final class DMBSettings: ObservableObject {
     
+    /// The appearance to force while the Mac runs with its lid closed on an external display.
+    public enum ClamshellAppearance: Int, CaseIterable, Identifiable {
+        /// Keep the current appearance, but don't change it automatically.
+        case unchanged
+        case light
+        case dark
+        
+        public var id: Int { rawValue }
+    }
+    
+    /// What the system looked like before clamshell mode forced an appearance, so it can be restored.
+    struct ClamshellRestoreState {
+        let appearance: Int32
+        let switchesAutomatically: Bool
+    }
+    
     private struct Keys {
         static let darknessThreshold = "darknessThreshold"
         static let isChangeSystemAppearanceBasedOnAmbientLightEnabled = "isChangeSystemAppearanceBasedOnAmbientLightEnabled"
@@ -19,6 +35,10 @@ public final class DMBSettings: ObservableObject {
         static let disableAppearanceChangeInClamshellMode = "disableAppearanceChangeInClamshellMode"
         static let enableImmediateChangeOnComputerWake = "enableImmediateChangeOnComputerWake"
         static let extraThresholdBeforeRevertingToLightMode = "extraThresholdBeforeRevertingToLightMode"
+        static let clamshellAppearance = "clamshellAppearance"
+        static let clamshellRestoreAppearance = "clamshellRestoreAppearance"
+        static let clamshellRestoreSwitchesAutomatically = "clamshellRestoreSwitchesAutomatically"
+        static let isMenuBarIconEnabled = "isMenuBarIconEnabled"
         
         static let defaultDarknessThreshold: Double = {
             DMBAmbientLightSensor.hardwareUsesLegacySensor() ? 20.0 : 52.0
@@ -50,7 +70,9 @@ public final class DMBSettings: ObservableObject {
             Keys.ambientLightSmoothingConstant: Keys.defaultAmbientLightSmoothingConstant,
             Keys.disableAppearanceChangeInClamshellMode: true,
             Keys.enableImmediateChangeOnComputerWake: true,
-            Keys.extraThresholdBeforeRevertingToLightMode: Keys.defaultExtraThresholdBeforeRevertingToLightMode
+            Keys.extraThresholdBeforeRevertingToLightMode: Keys.defaultExtraThresholdBeforeRevertingToLightMode,
+            Keys.clamshellAppearance: ClamshellAppearance.unchanged.rawValue,
+            Keys.isMenuBarIconEnabled: true
         ])
         
         self.isChangeSystemAppearanceBasedOnAmbientLightEnabled = defaults.bool(forKey: Keys.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
@@ -59,6 +81,8 @@ public final class DMBSettings: ObservableObject {
         self.darknessThresholdIntervalInSeconds = defaults.optionalDoubleValue(forKey: Keys.darknessThresholdIntervalInSeconds) ?? Keys.defaultDarknessThresholdIntervalInSeconds
         self.ambientLightSmoothingConstant = defaults.optionalDoubleValue(forKey: Keys.ambientLightSmoothingConstant) ?? Keys.defaultAmbientLightSmoothingConstant
         self.extraThresholdBeforeRevertingToLightMode = defaults.optionalDoubleValue(forKey: Keys.extraThresholdBeforeRevertingToLightMode) ?? Keys.defaultExtraThresholdBeforeRevertingToLightMode
+        self.clamshellAppearance = ClamshellAppearance(rawValue: defaults.integer(forKey: Keys.clamshellAppearance)) ?? .unchanged
+        self.isMenuBarIconEnabled = defaults.bool(forKey: Keys.isMenuBarIconEnabled)
         
         if isPreviewing {
             self.isLaunchAtLoginEnabled = false
@@ -77,6 +101,27 @@ public final class DMBSettings: ObservableObject {
     
     var isImmediateChangeOnComputerWakeEnabled: Bool {
         defaults.bool(forKey: Keys.enableImmediateChangeOnComputerWake)
+    }
+    
+    /// Persisted so the system can still be restored if the app quits while the lid is closed.
+    var clamshellRestoreState: ClamshellRestoreState? {
+        get {
+            guard let appearance = defaults.optionalDoubleValue(forKey: Keys.clamshellRestoreAppearance) else { return nil }
+            
+            return ClamshellRestoreState(
+                appearance: Int32(appearance),
+                switchesAutomatically: defaults.bool(forKey: Keys.clamshellRestoreSwitchesAutomatically)
+            )
+        }
+        set {
+            if let newValue = newValue {
+                defaults.set(newValue.appearance, forKey: Keys.clamshellRestoreAppearance)
+                defaults.set(newValue.switchesAutomatically, forKey: Keys.clamshellRestoreSwitchesAutomatically)
+            } else {
+                defaults.removeObject(forKey: Keys.clamshellRestoreAppearance)
+                defaults.removeObject(forKey: Keys.clamshellRestoreSwitchesAutomatically)
+            }
+        }
     }
     
     @Published public var hasLaunchedAppBefore: Bool {
@@ -138,6 +183,27 @@ public final class DMBSettings: ObservableObject {
             defaults.set(
                 extraThresholdBeforeRevertingToLightMode,
                 forKey: Keys.extraThresholdBeforeRevertingToLightMode
+            )
+        }
+    }
+    
+    /// The appearance to use while the Mac runs with its lid closed on an external display.
+    /// Automatic switching (both ours and macOS') is suspended in that state, and restored when the lid opens.
+    @Published public var clamshellAppearance: ClamshellAppearance {
+        didSet {
+            defaults.set(
+                clamshellAppearance.rawValue,
+                forKey: Keys.clamshellAppearance
+            )
+        }
+    }
+    
+    /// Whether to show the menu bar icon.
+    @Published public var isMenuBarIconEnabled: Bool {
+        didSet {
+            defaults.set(
+                isMenuBarIconEnabled,
+                forKey: Keys.isMenuBarIconEnabled
             )
         }
     }

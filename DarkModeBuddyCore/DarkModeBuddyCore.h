@@ -17,6 +17,8 @@ FOUNDATION_EXPORT const unsigned char DarkModeBuddyCoreVersionString[];
 
 extern int SLSGetAppearanceThemeLegacy(void);
 extern void SLSSetAppearanceThemeLegacy(int);
+extern bool SLSGetAppearanceThemeSwitchesAutomatically(void);
+extern void SLSSetAppearanceThemeSwitchesAutomatically(bool);
 
 #define kDarkModeBuddyCoreSubsystemName "codes.rambo.DarkModeBuddyCore"
 

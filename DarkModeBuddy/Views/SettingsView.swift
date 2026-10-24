@@ -13,41 +13,23 @@ struct SettingsView: View {
     @EnvironmentObject var settings: DMBSettings
 
     private let darknessInterval: ClosedRange<Double> = 0...30000
-
-    // Slider geometry: 80% of the track covers 0...6000 (fine control over the
-    // useful indoor range), the remaining 20% covers 6000...30000 for bright
-    // rooms and direct daylight.
-    private let darknessSliderBreakpointPosition: Double = 0.8
-    private let darknessSliderBreakpointValue: Double = 6000
-
-    private func value(forSliderPosition position: Double) -> Double {
-        let bp = darknessSliderBreakpointPosition
-        let bv = darknessSliderBreakpointValue
-        let maxV = darknessInterval.upperBound
-        if position <= bp {
-            return (position / bp) * bv
-        } else {
-            return bv + ((position - bp) / (1 - bp)) * (maxV - bv)
-        }
-    }
-
-    private func sliderPosition(forValue value: Double) -> Double {
-        let bp = darknessSliderBreakpointPosition
-        let bv = darknessSliderBreakpointValue
-        let maxV = darknessInterval.upperBound
-        if value <= bv {
-            return (value / bv) * bp
-        } else {
-            return bp + ((value - bv) / (maxV - bv)) * (1 - bp)
-        }
-    }
-
-    private var darknessThresholdSliderBinding: Binding<Double> {
-        Binding(
-            get: { sliderPosition(forValue: settings.darknessThreshold) },
-            set: { settings.darknessThreshold = value(forSliderPosition: $0) }
-        )
-    }
+    
+    /// Finer steps at the low end, where typical indoor readings sit,
+    /// with coarse steps up to bright rooms and direct daylight.
+    private let darknessStops: [Double] = Array(stride(from: 0.0, to: 20, by: 1))
+        + Array(stride(from: 20.0, to: 100, by: 5))
+        + Array(stride(from: 100.0, to: 500, by: 25))
+        + Array(stride(from: 500.0, to: 3000, by: 250))
+        + Array(stride(from: 3000.0, to: 6000, by: 500))
+        + Array(stride(from: 6000.0, through: 30000, by: 2000))
+    
+    private let revertMarginStops: [Double] = Array(stride(from: 1.0, to: 20, by: 1))
+        + Array(stride(from: 20.0, to: 100, by: 5))
+        + Array(stride(from: 100.0, through: 500, by: 25))
+    
+    private let delayStops: [Double] = Array(stride(from: 5.0, to: 60, by: 5))
+        + Array(stride(from: 60.0, to: 300, by: 15))
+        + Array(stride(from: 300.0, through: 600, by: 60))
 
     @State private var isShowingDarknessValueOutOfBoundsAlert = false
     @State private var isEditingAmbientLightLevelManually = false
@@ -75,6 +57,11 @@ struct SettingsView: View {
             )
             
             Toggle(
+                "Show in Menu Bar",
+                isOn: $settings.isMenuBarIconEnabled
+            )
+            
+            Toggle(
                 "Change Theme Automatically",
                 isOn: $settings.isChangeSystemAppearanceBasedOnAmbientLightEnabled
             )
@@ -84,7 +71,7 @@ struct SettingsView: View {
                     Text("Go Dark When Ambient Light Falls Below:")
                     
                     HStack(alignment: .firstTextBaseline) {
-                        Slider(value: darknessThresholdSliderBinding, in: 0...1)
+                        SteppedSlider(value: $settings.darknessThreshold, stops: darknessStops)
                             .frame(maxWidth: 300)
                         if isEditingAmbientLightLevelManually {
                             TextField("", text: $editingAmbientLightManuallyTextFieldStore, onCommit: {
@@ -121,12 +108,25 @@ struct SettingsView: View {
                     .font(.system(size: 12))
                     .foregroundColor(Color(NSColor.secondaryLabelColor))
                     
+                    Text("Go Light Again When Ambient Light Rises Above:")
+                        .padding(.top, 22)
+                    
+                    HStack(alignment: .firstTextBaseline) {
+                        SteppedSlider(value: $settings.extraThresholdBeforeRevertingToLightMode, stops: revertMarginStops)
+                            .frame(maxWidth: 300)
+                        Text("\(settings.lightThreshold.formattedNoFractionDigits)")
+                            .font(.system(size: 12, weight: .medium).monospacedDigit())
+                    }
+                    
+                    Text("Dark level + \(settings.extraThresholdBeforeRevertingToLightMode.formattedNoFractionDigits), to avoid flipping back and forth.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(NSColor.secondaryLabelColor))
                     
                     Text("Delay Time:")
                         .padding(.top, 22)
                     
                     HStack(alignment: .firstTextBaseline) {
-                        Slider(value: $settings.darknessThresholdIntervalInSeconds, in: 15...600, step: 15)
+                        SteppedSlider(value: $settings.darknessThresholdIntervalInSeconds, stops: delayStops)
                         Text(settings.darknessThresholdIntervalInSeconds.formattedTime)
                             .font(.system(size: 12, weight: .medium).monospacedDigit())
                             .frame(width: 50, alignment: .trailing)
@@ -135,12 +135,59 @@ struct SettingsView: View {
             }
             .disabled(!settings.isChangeSystemAppearanceBasedOnAmbientLightEnabled)
             
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("With Lid Closed:")
+                    
+                    Picker("With Lid Closed:", selection: $settings.clamshellAppearance) {
+                        ForEach(DMBSettings.ClamshellAppearance.allCases) { appearance in
+                            Text(appearance.title).tag(appearance)
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(maxWidth: 140)
+                }
+                
+                Text("When using an external display with the lid closed, use this theme and pause automatic switching, including macOS’ own.")
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(NSColor.secondaryLabelColor))
+                    // A fixed width lets this wrap without inflating the window's minimum height.
+                    .frame(width: 340, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
             Text(settings.currentSettingsDescription)
                 .font(.system(size: 11))
                 .foregroundColor(Color(NSColor.tertiaryLabelColor))
 //                .multilineTextAlignment(.center)
                 .lineLimit(nil)
         }
+    }
+}
+
+/// A slider that snaps to the given stops, with a haptic tick on each step.
+struct SteppedSlider: View {
+    @Binding var value: Double
+    let stops: [Double]
+    
+    private var index: Binding<Double> {
+        Binding(
+            get: {
+                let nearest = stops.indices.min { abs(stops[$0] - value) < abs(stops[$1] - value) } ?? 0
+                return Double(nearest)
+            },
+            set: { newIndex in
+                let newValue = stops[min(max(Int(newIndex.rounded()), 0), stops.count - 1)]
+                guard newValue != value else { return }
+                
+                value = newValue
+                NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+            }
+        )
+    }
+    
+    var body: some View {
+        Slider(value: index, in: 0...Double(stops.count - 1), step: 1)
     }
 }
 
@@ -177,7 +224,25 @@ extension DMBSettings {
             return "Dark Mode will not be enabled automatically based on ambient light."
         }
         
-        return "Dark Mode will be enabled when the ambient light stays below \(darknessThreshold.formattedNoFractionDigits) for over \(darknessThresholdIntervalInSeconds.formattedLongTime)."
+        return "Dark Mode will be enabled when the ambient light stays below \(darknessThreshold.formattedNoFractionDigits) for over \(darknessThresholdIntervalInSeconds.formattedLongTime), and Light Mode when it stays above \(lightThreshold.formattedNoFractionDigits) for as long."
+    }
+    
+    /// The level ambient light must rise above to switch back from Dark Mode to Light Mode.
+    var lightThreshold: Double {
+        darknessThreshold + extraThresholdBeforeRevertingToLightMode
+    }
+}
+
+extension DMBSettings.ClamshellAppearance {
+    var title: String {
+        switch self {
+        case .unchanged:
+            return "Don't Change"
+        case .light:
+            return "Light"
+        case .dark:
+            return "Dark"
+        }
     }
 }
 

@@ -30,9 +30,15 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     private let log = OSLog(subsystem: kDarkModeBuddyCoreSubsystemName, category: String(describing: DMBSystemAppearanceSwitcher.self))
     
     let settings: DMBSettings
-    let reader: DMBAmbientLightSensorReader
+    public let reader: DMBAmbientLightSensorReader
     
     private var cancellables = Set<AnyCancellable>()
+    
+    private var clamshellStateChecker: ClamshellStateChecker?
+    
+    /// The appearance last forced because of clamshell mode, so it's only applied once
+    /// and the user can still change it manually while the lid is closed.
+    private var forcedClamshellAppearance: Appearance?
     
     public init(settings: DMBSettings,
                 reader: DMBAmbientLightSensorReader = DMBAmbientLightSensorReader(frequency: .fast))
@@ -54,7 +60,18 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
             self?.reset()
         }.store(in: &cancellables)
         
+        settings.$clamshellAppearance.dropFirst().sink { [weak self] newValue in
+            self?.updateClamshellOverride(preference: newValue)
+        }.store(in: &cancellables)
+        
+        clamshellStateChecker = ClamshellStateChecker { [weak self] in
+            self?.updateClamshellOverride()
+        }
+        
         setupUpdateAppearanceOnWake()
+        
+        // Also restores the system appearance if the app quit while the override was active.
+        updateClamshellOverride()
         
         reader.activate()
     }
@@ -62,6 +79,7 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     private func setupUpdateAppearanceOnWake() {
         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self?.updateClamshellOverride()
                 self?.attemptAppearanceChangeOnWake()
             }
         }
@@ -154,6 +172,11 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
     private func changeSystemAppearance(to newAppearance: Appearance) {
         guard newAppearance != .current else { return }
         
+        guard settings.clamshellRestoreState == nil else {
+            os_log("Skipping appearance change because the clamshell appearance override is active", log: self.log, type: .debug)
+            return
+        }
+        
         if settings.isDisableAppearanceChangeInClamshellModeEnabled {
             guard !ClamshellStateChecker.isClamshellClosed() else {
                 os_log("Skipping appearance change because the Mac is in clamshell mode", log: self.log, type: .debug)
@@ -171,4 +194,74 @@ public final class DMBSystemAppearanceSwitcher: ObservableObject {
         SLSSetAppearanceThemeLegacy(newAppearance.rawValue)
     }
     
+    // MARK: - Clamshell override
+    
+    /// Forces the preferred appearance while the lid is closed, suspending both our automatic switching and macOS',
+    /// and restores the previous state once the lid opens (or the preference is turned off).
+    private func updateClamshellOverride(preference: DMBSettings.ClamshellAppearance? = nil) {
+        let preference = preference ?? settings.clamshellAppearance
+        
+        if let forcedAppearance = preference.appearance, ClamshellStateChecker.isClamshellClosed() {
+            if settings.clamshellRestoreState == nil {
+                settings.clamshellRestoreState = DMBSettings.ClamshellRestoreState(
+                    appearance: SLSGetAppearanceThemeLegacy(),
+                    switchesAutomatically: SLSGetAppearanceThemeSwitchesAutomatically()
+                )
+                
+                // Only on entry, so the user can still turn it back on while the lid is closed.
+                SLSSetAppearanceThemeSwitchesAutomatically(false)
+                
+                os_log("Entering clamshell appearance override", log: self.log, type: .debug)
+            }
+            
+            candidateAppearance = nil
+            cancelScheduledApperanceChange()
+            
+            guard forcedAppearance != forcedClamshellAppearance else { return }
+            forcedClamshellAppearance = forcedAppearance
+            
+            os_log("Forcing %{public}@ appearance in clamshell mode", log: self.log, type: .debug, forcedAppearance.description)
+            
+            SLSSetAppearanceThemeLegacy(forcedAppearance.rawValue)
+        } else {
+            guard endClamshellOverride() else { return }
+            
+            // Let ambient light take over again from the current reading.
+            reset()
+        }
+    }
+    
+    /// Restores the theme and macOS' automatic switching saved when the clamshell override began.
+    /// Returns whether an override was active.
+    @discardableResult
+    public func endClamshellOverride() -> Bool {
+        forcedClamshellAppearance = nil
+        
+        guard let restoreState = settings.clamshellRestoreState else { return false }
+        settings.clamshellRestoreState = nil
+        
+        os_log("Leaving clamshell appearance override", log: self.log, type: .debug)
+        
+        SLSSetAppearanceThemeLegacy(restoreState.appearance)
+        
+        if restoreState.switchesAutomatically {
+            SLSSetAppearanceThemeSwitchesAutomatically(true)
+        }
+        
+        return true
+    }
+    
+}
+
+private extension DMBSettings.ClamshellAppearance {
+    var appearance: DMBSystemAppearanceSwitcher.Appearance? {
+        switch self {
+        case .unchanged:
+            return nil
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        }
+    }
 }

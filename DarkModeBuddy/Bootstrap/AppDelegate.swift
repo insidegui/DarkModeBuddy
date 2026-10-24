@@ -39,6 +39,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         switcher.activate()
         
+        statusItemController = StatusItemController(settings: settings, reader: switcher.reader) { [weak self] in
+            self?.showSettingsWindow(nil)
+        }
+        
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
             selector: #selector(receivedShutdownNotification),
@@ -47,13 +51,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
     }
     
+    private var statusItemController: StatusItemController?
+    
     private lazy var sensorReader = DMBAmbientLightSensorReader(frequency: .realtime)
 
     @IBAction func showSettingsWindow(_ sender: Any?) {
         NSApp.setActivationPolicy(.regular)
         
+        guard !isShowingSettingsWindow else {
+            window.deminiaturize(nil)
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        
         window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 385, height: 360),
+            contentRect: NSRect(x: 0, y: 0, width: 385, height: 580),
             styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         window.center()
@@ -85,7 +98,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var isShowingSettingsWindow: Bool {
         guard let window = window else { return false }
-        return window.isVisible
+        return window.isVisible || window.isMiniaturized
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -135,6 +148,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    func applicationWillTerminate(_ notification: Notification) {
+        // Don't leave the system stuck on the clamshell theme with macOS' automatic switching off.
+        switcher.endClamshellOverride()
+    }
+    
     @objc func receivedShutdownNotification(_ note: Notification) {
         shouldSkipTerminationConfirmation = true
     }
@@ -144,6 +162,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
+        guard (notification.object as? NSWindow) === window else { return }
+        
         NSApp.setActivationPolicy(.accessory)
         
         window = nil
